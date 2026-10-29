@@ -1,2 +1,2 @@
-# taraksh-GPT
-my chatbot i m 13 chill
+# Chatbot By Taraksh Choudhary 
+Chill i m 13
