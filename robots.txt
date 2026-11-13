@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://taraksh9123-droid.github.io/taraksh-GPT/sitemap.xml
