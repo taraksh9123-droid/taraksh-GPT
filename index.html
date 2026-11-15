@@ -1740,7 +1740,7 @@
       const disableWebSearchForTest = false;
       const groqApiKey = typeof window.GROQ_API_KEY === 'string' && window.GROQ_API_KEY.trim()
         ? window.GROQ_API_KEY.trim()
-        : 'enter key here';
+        : '';
 
       function getGroqApiKey() {
         return groqApiKey;
@@ -2609,7 +2609,7 @@
         }
 
         if (!getGroqApiKey()) {
-          return getLocalBrowserReply(message);
+          return 'Groq is not configured. Add your key in config.js or replace the placeholder in index.html.';
         }
 
         try {
@@ -2620,10 +2620,10 @@
         } catch (error) {
           const details = error.message || String(error);
           console.error('Groq request failed.', error);
-          return getLocalBrowserReply(message);
+          return `Groq request failed: ${details}`;
         }
 
-        return getLocalBrowserReply(message);
+        return 'Groq returned no answer.';
       }
 
       tabButtons.forEach((button) => {
