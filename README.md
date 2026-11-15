@@ -21,7 +21,7 @@ A browser-based AI assistant for chat, coding, web searches, weather updates, im
 1. Clone or download this repository.
 2. Open `index.html` in a modern browser.
 3. Open **Settings** and enable **Smart mode**.
-4. Enter a Groq API key and save it.
+4. Open **Chat** or **Code** and start using the assistant. The Groq key is embedded in `index.html`.
 5. Open **Chat** or **Code** and start using the assistant.
 
 No build step or package installation is required.
@@ -32,7 +32,7 @@ The app sends Smart mode requests directly from the browser to:
 
 `https://api.groq.com/openai/v1/chat/completions`
 
-The current default model is `openai/gpt-oss-20b`. API keys are stored in the browser's local storage and are not included in the repository. Never commit an API key to source control. For a public deployment, consider using a server-side proxy so the browser does not handle a provider credential directly.
+The current default model is `openai/gpt-oss-20b`. The app reads an optional `window.GROQ_API_KEY` from the local, gitignored `config.js`, falling back to the key embedded in `index.html`.
 
 ## Code Agent
 
