@@ -1738,12 +1738,12 @@
       let speechStopped = true;
       let pyodideInstance = null;
       const disableWebSearchForTest = false;
-      const groqApiKey = typeof window.GROQ_API_KEY === 'string' && window.GROQ_API_KEY.trim()
-        ? window.GROQ_API_KEY.trim()
+      const groqProxyUrl = typeof window.GROQ_PROXY_URL === 'string'
+        ? window.GROQ_PROXY_URL.trim().replace(/\/$/, '')
         : '';
 
-      function getGroqApiKey() {
-        return groqApiKey;
+      function getGroqProxyUrl() {
+        return groqProxyUrl;
       }
 
       function syncApiModeUi() {
@@ -1753,8 +1753,8 @@
       }
 
       async function getGroqReply(message) {
-        const apiKey = getGroqApiKey();
-        if (!apiKey) return null;
+        const proxyUrl = getGroqProxyUrl();
+        if (!proxyUrl) return null;
 
         const recentConversation = messageLog
           .slice(0, -1)
@@ -1764,11 +1764,10 @@
             content: entry.content
           }));
 
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const response = await fetch(proxyUrl, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             model: 'openai/gpt-oss-20b',
@@ -1787,7 +1786,11 @@
 
         const data = await response.json();
         if (!response.ok) {
-          throw new Error(data.error?.message || 'Groq did not respond.');
+          const groqMessage = data.error?.message || 'Groq did not respond.';
+          if (/invalid|revoked|expired|api key|authentication/i.test(groqMessage)) {
+            throw new Error('The hosted Groq service rejected its configured key. The site owner must rotate the Worker secret.');
+          }
+          throw new Error(groqMessage);
         }
 
         const rawReply = data.choices?.[0]?.message?.content?.trim();
@@ -2261,7 +2264,7 @@
             '',
             code
           ].join('\n'));
-          if (!response) throw new Error('Configure GROQ_API_KEY to use the Code Agent.');
+          if (!response) throw new Error('The hosted Groq proxy is not configured.');
           const codeBlock = response.match(/```(?:[a-zA-Z0-9+#.-]+)?\s*\n([\s\S]*?)```/);
           const asksForCode = /\b(?:write|create|generate|implement|build|develop)\b[\s\S]{0,40}\b(?:code|script|function|program|app)\b/i.test(instruction);
           if (asksForCode && codeBlock) {
@@ -2608,8 +2611,8 @@
           return getLocalBrowserReply(message);
         }
 
-        if (!getGroqApiKey()) {
-          return 'Groq is not configured. Add your key in config.js or replace the placeholder in index.html.';
+        if (!getGroqProxyUrl()) {
+          return 'The hosted Groq proxy is not configured.';
         }
 
         try {

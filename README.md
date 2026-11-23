@@ -21,7 +21,7 @@ A browser-based AI assistant for chat, coding, web searches, weather updates, im
 1. Clone or download this repository.
 2. Open `index.html` in a modern browser.
 3. Open **Settings** and enable **Smart mode**.
-4. Open **Chat** or **Code** and start using the assistant. The Groq key is embedded in `index.html`.
+4. Deploy `worker.js` as a Cloudflare Worker, set `GROQ_API_KEY` in Worker secrets, and set `GROQ_PROXY_URL` in `config.js`.
 5. Open **Chat** or **Code** and start using the assistant.
 
 No build step or package installation is required.
@@ -32,7 +32,23 @@ The app sends Smart mode requests directly from the browser to:
 
 `https://api.groq.com/openai/v1/chat/completions`
 
-The current default model is `openai/gpt-oss-20b`. The app reads an optional `window.GROQ_API_KEY` from the local, gitignored `config.js`, falling back to the key embedded in `index.html`.
+The current default model is `openai/gpt-oss-20b`. Do not put a Groq key in `index.html`, GitHub Pages, or `config.js`. Deploy `worker.js`, store the key in the Worker secret `GROQ_API_KEY`, and set only the proxy URL in `config.js`.
+
+## GitHub Pages deployment, step by step
+
+1. Create a replacement key in the Groq console. Do not share or paste it into GitHub.
+2. Open Cloudflare Dashboard, then go to **Workers & Pages**.
+3. Select **Create**, **Start with Hello World**, and name the Worker `taraksh-gpt-groq-proxy`.
+4. Open the Worker editor, replace the example code with the contents of `worker.js`, and deploy it.
+5. Open **Settings**, **Variables and Secrets**, and add a secret named `GROQ_API_KEY` with the replacement key as its value.
+6. Add a plain variable named `ALLOWED_ORIGIN` with your exact GitHub Pages origin, for example `https://taraksh9123-droid.github.io`. Do not include a path or trailing slash.
+7. Copy the Worker URL, which normally looks like `https://taraksh-gpt-groq-proxy.<account-subdomain>.workers.dev`.
+8. In this repository, create `config.js` from `config.example.js` and set `GROQ_PROXY_URL` to the Worker URL.
+9. Commit and push `config.js` and `index.html`. It is safe to commit `config.js` because it contains only the public Worker URL, not the Groq key.
+10. In GitHub, open **Settings**, **Pages**, and deploy from the repository branch if Pages is not already enabled.
+11. Open the GitHub Pages site and test Chat in Smart mode.
+
+If Groq reports that a key is invalid or revoked, create a replacement key and update only the Cloudflare `GROQ_API_KEY` secret. Redeploy is not required.
 
 ## Code Agent
 
