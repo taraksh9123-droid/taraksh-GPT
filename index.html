@@ -1795,7 +1795,22 @@
 
         const rawReply = data.choices?.[0]?.message?.content?.trim();
         if (!rawReply) throw new Error('Groq returned an empty response.');
-        return rawReply.replace(/^\s*#{1,6}\s+/gm, '').trim();
+        return cleanAssistantText(rawReply);
+      }
+
+      function cleanAssistantText(text) {
+        return String(text || '')
+          .replace(/```(?:[a-z0-9_-]+)?\s*([\s\S]*?)```/gi, '$1')
+          .replace(/^\s*#{1,6}\s+/gm, '')
+          .replace(/^\s*(?:[-*_]\s*){3,}\s*$/gm, '')
+          .replace(/^\s*[*+-]\s+(?=\S)/gm, '• ')
+          .replace(/\*\*([^*\n]+)\*\*/g, '$1')
+          .replace(/__([^_\n]+)__/g, '$1')
+          .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1$2')
+          .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, '$1$2')
+          .replace(/[ \t]+\n/g, '\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
       }
 
       function applyTheme(theme) {
@@ -2020,13 +2035,14 @@
       }
 
       function addMessage(role, content) {
+        const displayContent = role === 'assistant' ? cleanAssistantText(content) : content;
         const messageShell = document.createElement('div');
         messageShell.className = `message-shell ${role}`;
         const el = document.createElement('div');
         el.className = `message ${role}`;
         const contentEl = document.createElement('span');
         contentEl.className = 'message-content';
-        contentEl.textContent = content;
+        contentEl.textContent = displayContent;
         el.appendChild(contentEl);
         messageShell.appendChild(el);
         if (role === 'assistant') addAssistantActions(messageShell);
@@ -2284,6 +2300,7 @@
       }
 
       function addTypingMessage(content) {
+        const displayContent = cleanAssistantText(content);
         return new Promise((resolve) => {
           const el = document.createElement('div');
           el.className = 'message assistant typing';
@@ -2298,14 +2315,14 @@
 
           let index = 0;
           const typeNextChunk = () => {
-            const chunkSize = content.length > 240 ? 8 : 4;
-            contentEl.textContent = content.slice(0, index);
+            const chunkSize = displayContent.length > 240 ? 8 : 4;
+            contentEl.textContent = displayContent.slice(0, index);
             scrollChatToBottom();
 
-            if (index >= content.length) {
+            if (index >= displayContent.length) {
               el.classList.remove('typing');
               addAssistantActions(messageShell);
-              messageLog.push({ role: 'assistant', content, feedback: null });
+              messageLog.push({ role: 'assistant', content: displayContent, feedback: null });
               renderHistory();
               scrollChatToBottom();
               resolve();
