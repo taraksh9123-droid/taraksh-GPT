@@ -1,4 +1,5 @@
-const SESSION_LIFETIME_SECONDS = 60 * 60 * 24 * 30;
+const SESSION_LIFETIME_SECONDS = 60 * 60 * 24 * 300;
+const SESSION_REFRESH_THRESHOLD_SECONDS = 60 * 60 * 24 * 30;
 const MAX_CHAT_BYTES = 750000;
 
 function jsonResponse(data, status, corsHeaders) {
@@ -29,9 +30,14 @@ async function getSession(request, db) {
   const token = getBearerToken(request);
   if (!token) return null;
   const tokenHash = await sha256(token);
+  const now = Math.floor(Date.now() / 1000);
   const session = await db.prepare(
-    'SELECT user_id FROM auth_sessions WHERE session_hash = ? AND expires_at > ?'
-  ).bind(tokenHash, Math.floor(Date.now() / 1000)).first();
+    'SELECT user_id, expires_at FROM auth_sessions WHERE session_hash = ? AND expires_at > ?'
+  ).bind(tokenHash, now).first();
+  if (session && session.expires_at - now < SESSION_LIFETIME_SECONDS - SESSION_REFRESH_THRESHOLD_SECONDS) {
+    await db.prepare('UPDATE auth_sessions SET expires_at = ? WHERE session_hash = ?')
+      .bind(now + SESSION_LIFETIME_SECONDS, tokenHash).run();
+  }
   return session || null;
 }
 

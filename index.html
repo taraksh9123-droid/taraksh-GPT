@@ -2268,7 +2268,7 @@
       const authStorageKey = 'chatbot-account-session';
       const authCookieName = 'taraksh-gpt-session';
       const authCookiePath = new URL('.', window.location.href).pathname;
-      const authCookieLifetimeSeconds = 60 * 60 * 24 * 30;
+      const authCookieLifetimeSeconds = 60 * 60 * 24 * 300;
       const guestModeStorageKey = 'chatbot-guest-mode';
       let savedChats = [];
       let currentChatId = createChatId();
@@ -2384,7 +2384,15 @@
           if (callbackSession) return callbackSession;
 
           const cookieSession = readAccountSessionCookie();
-          if (cookieSession) return cookieSession;
+          if (cookieSession) {
+            try {
+              persistAccountSession(cookieSession);
+            } catch (error) {
+              console.error('Could not extend the saved sign-in cookie.', error);
+              pendingAuthError = error.message || 'The saved sign-in cookie could not be extended.';
+            }
+            return cookieSession;
+          }
 
           const legacySession = JSON.parse(localStorage.getItem(authStorageKey) || 'null');
           if (!legacySession) return null;
