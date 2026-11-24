@@ -2266,6 +2266,9 @@
       const messageLog = [];
       const guestChatsStorageKey = 'chatbot-guest-chats';
       const authStorageKey = 'chatbot-account-session';
+      const authCookieName = 'taraksh-gpt-session';
+      const authCookiePath = new URL('.', window.location.href).pathname;
+      const authCookieLifetimeSeconds = 60 * 60 * 24 * 30;
       const guestModeStorageKey = 'chatbot-guest-mode';
       let savedChats = [];
       let currentChatId = createChatId();
@@ -2302,6 +2305,56 @@
           : `chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       }
 
+      function isValidAccountSession(session) {
+        return Boolean(
+          session &&
+          typeof session.token === 'string' &&
+          /^[a-f0-9]{64}$/i.test(session.token) &&
+          session.user?.provider === 'github'
+        );
+      }
+
+      function readAccountSessionCookie() {
+        const prefix = `${authCookieName}=`;
+        const cookie = document.cookie
+          .split(';')
+          .map((part) => part.trim())
+          .find((part) => part.startsWith(prefix));
+        if (!cookie) return null;
+
+        try {
+          const session = JSON.parse(decodeURIComponent(cookie.slice(prefix.length)));
+          if (isValidAccountSession(session)) return session;
+          clearAccountSessionCookie();
+        } catch (error) {
+          console.error('Could not read the saved sign-in cookie.', error);
+          clearAccountSessionCookie();
+        }
+        return null;
+      }
+
+      function persistAccountSession(session) {
+        if (!isValidAccountSession(session)) {
+          throw new Error('The GitHub sign-in session is invalid.');
+        }
+
+        const value = encodeURIComponent(JSON.stringify(session));
+        document.cookie = `${authCookieName}=${value}; Max-Age=${authCookieLifetimeSeconds}; Path=${authCookiePath}; SameSite=Lax; Secure`;
+        if (!readAccountSessionCookie()) {
+          throw new Error('Your browser did not save the sign-in cookie. Enable cookies for this site and try again.');
+        }
+        localStorage.removeItem(authStorageKey);
+      }
+
+      function clearAccountSessionCookie() {
+        document.cookie = `${authCookieName}=; Max-Age=0; Path=${authCookiePath}; SameSite=Lax; Secure`;
+      }
+
+      function clearStoredAccountSession() {
+        clearAccountSessionCookie();
+        localStorage.removeItem(authStorageKey);
+      }
+
       function readStoredAccountSession() {
         try {
           const callbackParams = new URLSearchParams(window.location.hash.slice(1));
@@ -2310,16 +2363,16 @@
           let callbackSession = null;
           if (githubSession) {
             try {
-              callbackSession = JSON.parse(githubSession);
-              if (!callbackSession || typeof callbackSession.token !== 'string' ||
-                  callbackSession.user?.provider !== 'github') {
-                callbackSession = null;
+              const returnedSession = JSON.parse(githubSession);
+              if (!isValidAccountSession(returnedSession)) {
                 pendingAuthError = 'GitHub sign-in returned an invalid session. Please try again.';
               } else {
-                localStorage.setItem(authStorageKey, JSON.stringify(callbackSession));
+                persistAccountSession(returnedSession);
+                callbackSession = returnedSession;
               }
-            } catch {
-              pendingAuthError = 'GitHub sign-in returned an invalid session. Please try again.';
+            } catch (error) {
+              console.error('Could not save the GitHub sign-in session.', error);
+              pendingAuthError = error.message || 'GitHub sign-in could not be saved. Please try again.';
             }
           } else if (githubError) {
             pendingAuthError = githubError;
@@ -2327,13 +2380,25 @@
           if (githubSession || githubError) {
             history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
           }
-          const stored = JSON.parse(localStorage.getItem(authStorageKey) || 'null');
-          if (stored?.token && stored.user?.provider !== 'github') {
-            localStorage.removeItem(authStorageKey);
+
+          if (callbackSession) return callbackSession;
+
+          const cookieSession = readAccountSessionCookie();
+          if (cookieSession) return cookieSession;
+
+          const legacySession = JSON.parse(localStorage.getItem(authStorageKey) || 'null');
+          if (!legacySession) return null;
+          if (!isValidAccountSession(legacySession)) {
+            clearStoredAccountSession();
+            return null;
           }
-          return callbackSession || (stored && typeof stored.token === 'string' && stored.token && stored.user?.provider === 'github'
-            ? stored
-            : null);
+          try {
+            persistAccountSession(legacySession);
+          } catch (error) {
+            console.error('Could not migrate the saved sign-in session to a cookie.', error);
+            pendingAuthError = error.message || 'The saved sign-in could not be moved to a cookie.';
+          }
+          return legacySession;
         } catch (error) {
           console.error('Could not read the saved sign-in session.', error);
           return null;
@@ -2463,7 +2528,7 @@
         } catch (error) {
           console.error('Could not load account chat history.', error);
           accountSession = null;
-          localStorage.removeItem(authStorageKey);
+          clearStoredAccountSession();
           savedChats = readGuestChats();
           updateAccountUi();
           if (accountStatus) accountStatus.textContent = `Guest mode · ${error.message}`;
@@ -3909,7 +3974,7 @@
             console.error('Could not revoke the server session.', error);
           }
           accountSession = null;
-          localStorage.removeItem(authStorageKey);
+          clearStoredAccountSession();
           guestModeSelected = true;
           localStorage.setItem(guestModeStorageKey, 'true');
           savedChats = readGuestChats();

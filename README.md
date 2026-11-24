@@ -56,6 +56,8 @@ If Groq reports that a key is invalid or revoked, create a replacement key and u
 
 Each **New chat** creates a separate conversation session with its own ID, title, and messages, shown in the sidebar like ChatGPT chat history. Guest sessions stay in browser storage. GitHub accounts sync their sessions to D1, keyed by GitHub's stable numeric account ID; the client never supplies an owner ID for history operations. The Worker creates revocable, expiring sign-in sessions after completing GitHub's OAuth authorization-code flow.
 
+The browser persists the app session in a 30-day `Secure`, `SameSite=Lax` cookie and migrates existing localStorage sessions on the next visit. Because GitHub Pages is static, this cookie is JavaScript-readable; the Worker stores only a hash of the session token in D1.
+
 1. In [GitHub Developer settings](https://github.com/settings/developers), choose **OAuth Apps → New OAuth App**. Set the homepage to `https://taraksh9123-droid.github.io`.
 2. Set **Authorization callback URL** to your Worker URL followed by `/auth/github/callback`, for example `https://your-worker.workers.dev/auth/github/callback`. Create the app and generate a client secret.
 3. Set `window.GITHUB_CLIENT_ID` in `config.js` and the Worker variable `GITHUB_CLIENT_ID` to the app's client ID. Store `GITHUB_CLIENT_SECRET` only as a Cloudflare Worker secret; never put it in the website.
