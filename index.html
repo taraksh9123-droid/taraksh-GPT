@@ -25,47 +25,47 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230b1324'/%3E%3Cpath d='M32 8l6.5 18.5L57 33l-18.5 6.5L32 58l-6.5-18.5L7 33l18.5-6.5L32 8z' fill='%2367e8f9'/%3E%3Cpath d='M32 20v26M19 33h26' stroke='%230b1324' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
     <style>
       :root {
-        --bg: #060d1d;
-        --bg-secondary: #0f1d33;
-        --panel: #0d1727;
-        --panel-soft: #132134;
-        --panel-strong: #162b44;
-        --primary: #a855f7;
-        --primary-strong: #7e22ce;
-        --secondary: #3dd9c7;
-        --tertiary: #ff7bc6;
-        --warm: #ffb866;
+        --bg: #080b19;
+        --bg-secondary: #17112d;
+        --panel: #101629;
+        --panel-soft: #171f38;
+        --panel-strong: #111a30;
+        --primary: #b18aff;
+        --primary-strong: #8057f5;
+        --secondary: #35e0d0;
+        --tertiary: #ff70b8;
+        --warm: #ffd166;
         --success: #34d399;
-        --text: #edf6ff;
-        --muted: #a6b9d6;
-        --user: linear-gradient(135deg, #2a6df6, #6d5efc);
+        --text: #f5f3ff;
+        --muted: #abb5d1;
+        --user: linear-gradient(135deg, #8057f5 0%, #536dfe 54%, #20bfc9 100%);
         --assistant: linear-gradient(135deg, rgba(23, 36, 58, 0.98), rgba(17, 28, 45, 0.94));
-        --border: rgba(155, 180, 255, 0.18);
+        --border: rgba(177, 138, 255, 0.22);
         --shadow: 0 24px 60px rgba(8, 15, 30, 0.5);
-        --glow: rgba(124, 156, 255, 0.2);
-        --glow-secondary: rgba(61, 217, 199, 0.22);
+        --glow: rgba(137, 98, 255, 0.24);
+        --glow-secondary: rgba(53, 224, 208, 0.2);
       }
 
       body.light-mode {
-        --bg: #eef4ff;
-        --bg-secondary: #dfeaff;
+        --bg: #f4f3ff;
+        --bg-secondary: #e4f7ff;
         --panel: #ffffff;
         --panel-soft: #f5f8ff;
         --panel-strong: #ffffff;
-        --primary: #7c3aed;
-        --primary-strong: #6d28d9;
-        --secondary: #2bb8a5;
-        --tertiary: #ff5bb7;
-        --warm: #f19a2a;
+        --primary: #7145d8;
+        --primary-strong: #5630bf;
+        --secondary: #128e8a;
+        --tertiary: #e34f9c;
+        --warm: #c97b17;
         --success: #16a34a;
         --text: #0f172a;
         --muted: #475569;
         --user: linear-gradient(135deg, #dbeafe, #d9d9ff);
         --assistant: linear-gradient(135deg, #f5f7fb, #edf3ff);
-        --border: rgba(79, 110, 247, 0.16);
+        --border: rgba(113, 69, 216, 0.2);
         --shadow: 0 20px 50px rgba(79, 110, 247, 0.15);
-        --glow: rgba(79, 110, 247, 0.1);
-        --glow-secondary: rgba(43, 184, 165, 0.12);
+        --glow: rgba(133, 95, 231, 0.16);
+        --glow-secondary: rgba(24, 178, 168, 0.14);
       }
 
       * { box-sizing: border-box; }
@@ -1088,10 +1088,6 @@
         box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
       }
 
-      .chat-shell:has(#settingsPanel.active) .account-panel {
-        display: none;
-      }
-
       @keyframes rise-in {
         from { opacity: 0; transform: translateY(12px); }
         to { opacity: 1; transform: translateY(0); }
@@ -1415,10 +1411,19 @@
 
       body {
         min-height: 100vh;
-        background: var(--bg);
+        background:
+          radial-gradient(ellipse at 10% 12%, var(--glow), transparent 34rem),
+          radial-gradient(ellipse at 85% 85%, rgba(255, 112, 184, 0.1), transparent 32rem),
+          radial-gradient(ellipse at 70% 8%, var(--glow-secondary), transparent 27rem),
+          linear-gradient(135deg, var(--bg), var(--bg-secondary) 58%, var(--bg));
       }
 
-      body::before { display: none; }
+      body::before {
+        display: block;
+        opacity: 0.12;
+        background-size: 44px 44px;
+        mask-image: linear-gradient(120deg, black, transparent 76%);
+      }
 
       .app-shell {
         width: 100%;
@@ -1442,7 +1447,10 @@
         border: 0;
         border-radius: 0;
         box-shadow: none;
-        background: var(--bg);
+        background:
+          radial-gradient(ellipse at 80% 6%, rgba(53, 224, 208, 0.045), transparent 34rem),
+          radial-gradient(ellipse at 36% 100%, rgba(177, 138, 255, 0.06), transparent 42rem),
+          var(--bg);
       }
 
       .app-sidebar {
@@ -1451,8 +1459,12 @@
         min-height: 0;
         gap: 12px;
         padding: 14px 10px;
-        background: var(--panel);
+        background:
+          radial-gradient(circle at 15% 4%, rgba(177, 138, 255, 0.22), transparent 32%),
+          radial-gradient(circle at 0% 85%, rgba(53, 224, 208, 0.09), transparent 36%),
+          linear-gradient(180deg, #171b35 0%, #101629 100%);
         border-right: 1px solid var(--border);
+        text-align: left;
       }
 
       .sidebar-brand {
@@ -1470,6 +1482,9 @@
         flex-basis: 34px;
         padding: 4px;
         border-radius: 11px;
+        border-color: rgba(53, 224, 208, 0.8);
+        background: linear-gradient(145deg, #5630bf, #171f38);
+        box-shadow: 0 0 22px rgba(53, 224, 208, 0.14);
       }
 
       .new-chat-btn {
@@ -1477,9 +1492,14 @@
         padding: 10px 12px;
         text-align: left;
         color: var(--text);
-        background: var(--panel-soft);
-        border: 1px solid var(--border);
-        box-shadow: none;
+        background: linear-gradient(110deg, rgba(128, 87, 245, 0.26), rgba(32, 191, 201, 0.12));
+        border: 1px solid rgba(177, 138, 255, 0.32);
+        box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 8px 20px rgba(8, 8, 28, 0.18);
+      }
+
+      .new-chat-btn:hover {
+        border-color: var(--secondary);
+        box-shadow: 0 0 22px rgba(53, 224, 208, 0.14);
       }
 
       .tab-buttons {
@@ -1497,14 +1517,16 @@
         border: 0;
         border-radius: 8px;
         text-align: left;
+        align-items: center;
         color: var(--muted);
       }
 
       .tab-btn:hover,
       .tab-btn.active {
         color: var(--text);
-        background: var(--panel-soft);
-        box-shadow: none;
+        background: linear-gradient(90deg, rgba(177, 138, 255, 0.25), rgba(53, 224, 208, 0.1));
+        border-left: 3px solid var(--secondary);
+        box-shadow: inset 0 0 18px rgba(177, 138, 255, 0.07), 0 8px 18px rgba(5, 10, 24, 0.18);
         transform: none;
       }
 
@@ -1543,7 +1565,7 @@
 
       .conversation-list button:hover,
       .conversation-list button.active {
-        background: var(--panel-soft);
+        background: linear-gradient(90deg, rgba(177, 138, 255, 0.15), rgba(53, 224, 208, 0.06));
         color: var(--text);
         transform: none;
       }
@@ -1570,6 +1592,61 @@
         color: var(--text);
         box-shadow: none;
         font-size: 0.82rem;
+      }
+
+      .account-panel .account-signin {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .account-signin svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+      }
+
+      .settings-account {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px 20px;
+        padding: 16px 18px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--panel-soft);
+      }
+
+      .settings-account-heading h3,
+      .settings-account-heading p {
+        margin: 0;
+      }
+
+      .settings-account-heading h3 {
+        color: var(--text);
+        font-size: 1rem;
+      }
+
+      .settings-account-heading p {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .settings-account .account-panel {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 0;
+        border: 0;
+      }
+
+      .settings-account .account-status {
+        flex: 1 1 180px;
       }
 
       .auth-backdrop {
@@ -1708,34 +1785,6 @@
         min-height: 0;
       }
 
-      .workspace-header {
-        display: flex;
-        align-items: center;
-        min-height: 58px;
-        padding: 8px 24px;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .workspace-header .topbar {
-        gap: 10px;
-        margin: 0;
-        animation: none;
-        text-align: left;
-      }
-
-      .workspace-header .app-logo { display: none; }
-
-      .workspace-header h1 {
-        color: var(--text);
-        font-family: "Trebuchet MS", Verdana, sans-serif;
-        font-size: 1rem;
-        font-style: normal;
-        letter-spacing: 0;
-        text-shadow: none;
-      }
-
-      .workspace-header h1::after { display: none; }
-
       .workspace > .panel {
         min-height: 0;
         flex: 1;
@@ -1784,9 +1833,9 @@
       .message.user {
         padding: 11px 16px;
         border-radius: 18px;
-        background: var(--panel-soft);
-        color: var(--text);
-        box-shadow: none;
+        background: var(--user);
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(83, 109, 254, 0.2), inset 0 1px rgba(255, 255, 255, 0.16);
       }
 
       .message-shell.assistant .message-actions { display: flex; }
@@ -1799,8 +1848,8 @@
         padding: 0;
         border: 1px solid var(--border);
         border-radius: 24px;
-        background: var(--panel-soft);
-        box-shadow: none;
+        background: linear-gradient(135deg, rgba(177, 138, 255, 0.06), rgba(53, 224, 208, 0.035)), var(--panel-soft);
+        box-shadow: 0 12px 34px rgba(4, 8, 22, 0.28);
       }
 
       .chat-input-row {
@@ -1816,8 +1865,87 @@
       .send-btn,
       .voice-btn { width: 40px; height: 40px; flex-basis: 40px; }
       .attach-btn { width: 36px; height: 36px; }
-      .chat-input-row:focus-within { box-shadow: none; }
-      .chat-messages .welcome-message { margin: auto; color: var(--muted); text-align: center; }
+      .chat-input-row:focus-within {
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 2px var(--primary), 0 0 26px rgba(53, 224, 208, 0.16);
+      }
+
+      .settings-box {
+        border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+        background: linear-gradient(135deg, rgba(177, 138, 255, 0.1), rgba(53, 224, 208, 0.035)), var(--panel-soft);
+      }
+
+      .settings-box:hover {
+        border-color: var(--secondary);
+        box-shadow: 0 12px 28px rgba(5, 12, 25, 0.2), 0 0 20px rgba(53, 224, 208, 0.08);
+      }
+
+      .settings-account {
+        background: linear-gradient(115deg, rgba(177, 138, 255, 0.16), rgba(53, 224, 208, 0.07)), var(--panel-soft);
+        box-shadow: inset 0 1px rgba(255, 255, 255, 0.05), 0 12px 28px rgba(5, 12, 25, 0.16);
+      }
+
+      body.light-mode::before { opacity: 0.06; }
+
+      body.light-mode .chat-shell {
+        background:
+          radial-gradient(ellipse at 80% 6%, rgba(24, 178, 168, 0.08), transparent 34rem),
+          radial-gradient(ellipse at 36% 100%, rgba(133, 95, 231, 0.08), transparent 42rem),
+          var(--bg);
+      }
+
+      .chat-messages .welcome-message { margin: auto; color: var(--muted); }
+
+      .empty-chat-state {
+        width: min(100%, 620px);
+        display: grid;
+        gap: 12px;
+      }
+
+      .quick-start-label {
+        color: var(--secondary);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+      }
+
+      .quick-start-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .quick-start-btn {
+        display: grid;
+        justify-items: start;
+        gap: 6px;
+        min-height: 82px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(177, 138, 255, 0.12), rgba(53, 224, 208, 0.04)), var(--panel);
+        color: var(--text);
+        text-align: left;
+        box-shadow: none;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      }
+
+      .quick-start-btn strong {
+        font-size: 0.88rem;
+      }
+
+      .quick-start-btn span {
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 400;
+      }
+
+      .quick-start-btn:hover,
+      .quick-start-btn:focus-visible {
+        border-color: var(--secondary);
+        box-shadow: 0 0 20px rgba(53, 224, 208, 0.1);
+        transform: translateY(-2px);
+      }
 
       @media (max-width: 700px) {
         .app-shell { min-height: 0; height: 100dvh; }
@@ -1834,6 +1962,10 @@
         .tab-btn { flex: 0 0 auto; padding: 7px 9px; font-size: 0.8rem; }
         .sidebar-history-heading,
         .conversation-list { display: none; }
+        .settings-account {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
         .account-panel {
           display: grid;
           grid-template-columns: minmax(0, 1fr);
@@ -1842,10 +1974,14 @@
         .account-status { white-space: normal; }
         .account-panel button { justify-self: start; padding: 6px 8px; }
         .auth-card { padding: 28px 22px 22px; }
-        .workspace-header { min-height: 44px; padding: 6px 14px; }
         .chat-messages { padding: 18px 14px; }
         .chat-form { width: calc(100% - 20px); margin: 8px 10px; }
         .message-shell.user { max-width: 92%; }
+      }
+
+      @media (max-width: 480px) {
+        .quick-start-grid { grid-template-columns: 1fr; }
+        .quick-start-btn { min-height: 68px; }
       }
     </style>
   </head>
@@ -1881,25 +2017,13 @@
             <button class="tab-btn active" type="button" data-tab="chat">Chat</button>
             <button class="tab-btn" type="button" data-tab="code">Code</button>
             <button class="tab-btn" type="button" data-tab="calculator">Calculator</button>
-            <button class="tab-btn" type="button" data-tab="history">History & likes</button>
             <button class="tab-btn" type="button" data-tab="settings">Settings</button>
           </nav>
           <div class="sidebar-history-heading">Your chats</div>
           <ul id="conversationList" class="conversation-list" aria-label="Saved conversations"></ul>
-          <div class="account-panel">
-            <span id="accountStatus" class="account-status">Guest · saved on this device</span>
-            <button id="signInButton" type="button">Sign in</button>
-            <button id="guestModeButton" type="button">Continue as guest</button>
-            <button id="signOutButton" type="button" hidden>Sign out</button>
-          </div>
         </aside>
 
         <div class="workspace">
-          <header class="workspace-header">
-            <div class="topbar">
-              <h1>Taraksh GPT</h1>
-            </div>
-          </header>
           <section id="chatPanel" class="panel active">
           <div class="chat-container">
             <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
@@ -1988,36 +2112,28 @@
           </div>
         </section>
 
-        <aside id="historyPanel" class="panel history-panel">
-          <div class="history-summary" aria-live="polite">
-            <strong>Liked answers</strong>
-            <span id="likedAnswersCount" class="liked-count">0</span>
-          </div>
-          <div class="history-summary-stats" aria-live="polite">
-            <div class="history-stat">
-              <strong id="historyTotalMessages">0</strong>
-              <span>Total messages</span>
-            </div>
-            <div class="history-stat">
-              <strong id="historyAssistantReplies">0</strong>
-              <span>Replies</span>
-            </div>
-            <div class="history-stat">
-              <strong id="historyUserPrompts">0</strong>
-              <span>Prompts</span>
-            </div>
-          </div>
-          <div style="margin: 14px 0; display: flex; justify-content: flex-end;">
-            <button id="summarizeChatButton" class="secondary-btn" type="button">Summarize chat</button>
-          </div>
-          <ul id="historyList" class="history-list"></ul>
-        </aside>
-
         <aside id="settingsPanel" class="panel settings-panel">
           <div class="settings-header">
             <h2>Workspace settings</h2>
             <p>Shape the chat around the way you think and work.</p>
           </div>
+          <section class="settings-account" aria-labelledby="accountSettingsTitle">
+            <div class="settings-account-heading">
+              <h3 id="accountSettingsTitle">Account</h3>
+              <p>Manage sign-in and chat sync.</p>
+            </div>
+            <div class="account-panel">
+              <span id="accountStatus" class="account-status" aria-live="polite"></span>
+              <button id="signInButton" class="account-signin" type="button">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.77 2.37 3.2 1.68.1-.72.39-1.21.7-1.49-2.48-.28-5.09-1.24-5.09-5.53 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.11-1.45 3.05-1.15 3.05-1.15.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.3-2.61 5.25-5.1 5.53.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"></path>
+                </svg>
+                <span>Sign in</span>
+              </button>
+              <button id="guestModeButton" type="button">Continue as guest</button>
+              <button id="signOutButton" type="button" hidden>Sign out</button>
+            </div>
+          </section>
           <div class="settings-box">
             <span id="themeLabel" class="label-text">Light mode</span>
             <label class="switch" aria-label="Toggle theme">
@@ -2177,7 +2293,6 @@
       const githubSignInButton = document.getElementById('githubSignInButton');
       const authSetupDetails = document.getElementById('authSetupDetails');
       const authError = document.getElementById('authError');
-      const likedAnswersCount = document.getElementById('likedAnswersCount');
       const fileInput = document.getElementById('fileInput');
       const attachButton = document.getElementById('attachButton');
       const fileName = document.getElementById('fileName');
@@ -2188,7 +2303,6 @@
         chat: document.getElementById('chatPanel'),
         code: document.getElementById('codePanel'),
         calculator: document.getElementById('calculatorPanel'),
-        history: document.getElementById('historyPanel'),
         settings: document.getElementById('settingsPanel')
       };
       const themeToggle = document.getElementById('themeToggle');
@@ -2462,9 +2576,7 @@
         if (accountStatus) {
           accountStatus.textContent = signedIn
             ? accountSession.user.email || accountSession.user.name || 'Signed in'
-            : guestModeSelected
-              ? 'Guest mode selected · chats saved on this device'
-              : 'Guest · chats saved on this device';
+            : '';
           accountStatus.title = accountStatus.textContent;
         }
         if (signInButton) signInButton.hidden = signedIn;
@@ -2950,9 +3062,40 @@
       }
 
       function showWelcomeMessage() {
-        const welcome = document.createElement('div');
-        welcome.className = 'welcome-message';
-        welcome.textContent = 'Hi! I can help with quick answers, planning, coding, and summaries. Try a prompt or ask your own question.';
+        chatMessages.innerHTML = '';
+        const quickPrompts = [
+          ['Explain a topic', 'Make a tricky idea easier to understand', 'Explain how APIs work using a simple example.'],
+          ['Brainstorm ideas', 'Explore options for a project', 'Give me five creative ideas for a small weekend project.'],
+          ['Polish some writing', 'Make a message clearer and friendlier', 'Help me write a clear, friendly email to reschedule a meeting.'],
+          ['Help with code', 'Get a useful code example', 'Show me a clean JavaScript example for validating an email address.']
+        ];
+        const welcome = document.createElement('section');
+        welcome.className = 'welcome-message empty-chat-state';
+        welcome.setAttribute('aria-label', 'Quick-start prompts');
+
+        const label = document.createElement('span');
+        label.className = 'quick-start-label';
+        label.textContent = 'QUICK START';
+        welcome.appendChild(label);
+
+        const grid = document.createElement('div');
+        grid.className = 'quick-start-grid';
+        quickPrompts.forEach(([title, description, prompt]) => {
+          const button = document.createElement('button');
+          button.className = 'quick-start-btn';
+          button.type = 'button';
+          const buttonTitle = document.createElement('strong');
+          buttonTitle.textContent = title;
+          const buttonDescription = document.createElement('span');
+          buttonDescription.textContent = description;
+          button.append(buttonTitle, buttonDescription);
+          button.addEventListener('click', () => {
+            messageInput.value = prompt;
+            chatForm.requestSubmit();
+          });
+          grid.appendChild(button);
+        });
+        welcome.appendChild(grid);
         chatMessages.appendChild(welcome);
       }
 
@@ -2974,35 +3117,8 @@
       }
 
       function renderHistory() {
-        if (!historyList) return;
-
-        const likedCount = messageLog.filter((entry) => entry.role === 'assistant' && entry.feedback === 'like').length;
-        if (likedAnswersCount) likedAnswersCount.textContent = likedCount;
-        updateHistoryStats();
         renderConversationList();
-
-        historyList.innerHTML = '';
-
-        if (messageLog.length === 0) {
-          const emptyItem = document.createElement('li');
-          emptyItem.className = 'history-item';
-          emptyItem.innerHTML = '<strong>History</strong><p>No previous chat yet.</p>';
-          historyList.appendChild(emptyItem);
-          return;
-        }
-
-        messageLog.forEach((entry) => {
-          const item = document.createElement('li');
-          item.className = 'history-item';
-          const label = entry.role === 'user' ? 'You' : 'Chatbot';
-          const title = document.createElement('strong');
-          title.textContent = label;
-          const content = document.createElement('p');
-          content.textContent = entry.content;
-          item.append(title, content);
-          historyList.appendChild(item);
-        });
-        persistCurrentConversation();
+        if (messageLog.some((entry) => entry.role === 'user')) void persistCurrentConversation();
       }
 
       function updateScrollButton() {
@@ -3092,18 +3208,6 @@
         retryButton.setAttribute('aria-label', 'Retry this reply');
         retryButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4"></path><path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"></path></svg>';
         actions.appendChild(retryButton);
-
-        ['like', 'dislike'].forEach((kind) => {
-          const feedbackButton = document.createElement('button');
-          feedbackButton.className = `copy-btn message-action feedback-btn ${kind}-btn`;
-          feedbackButton.type = 'button';
-          feedbackButton.title = kind === 'like' ? 'Like this reply' : 'Dislike this reply';
-          feedbackButton.setAttribute('aria-label', feedbackButton.title);
-          feedbackButton.innerHTML = kind === 'like'
-            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v10H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h3Z"></path><path d="M7 10 12 2l1.5 1.5A3 3 0 0 1 14 5.6V8h5.2a2 2 0 0 1 2 2.3l-1 7A2 2 0 0 1 18.2 19H7"></path></svg>'
-            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 14V4H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3Z"></path><path d="m7 14 5 8 1.5-1.5A3 3 0 0 0 14 18.4V16h5.2a2 2 0 0 0 2-2.3l-1-7A2 2 0 0 0 18.2 5H7"></path></svg>';
-          actions.appendChild(feedbackButton);
-        });
 
         messageEl.appendChild(actions);
       }
