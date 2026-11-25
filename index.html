@@ -98,7 +98,7 @@
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: "Trebuchet MS", Verdana, sans-serif;
+        font-family: "Inter", "Aptos", "Segoe UI", sans-serif;
         background:
           radial-gradient(circle at 12% 8%, var(--glow), transparent 28rem),
           radial-gradient(circle at 82% 12%, var(--glow-secondary), transparent 26rem),
@@ -485,6 +485,34 @@
 
       .message-content {
         display: inline;
+      }
+
+      .generated-image-result {
+        display: grid;
+        justify-items: start;
+        gap: 9px;
+        width: min(100%, 520px);
+        margin: 14px 0 2px;
+      }
+
+      .generated-image-result img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
+      }
+
+      .generated-image-download {
+        color: var(--secondary);
+        font-size: 0.84rem;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .generated-image-download:hover {
+        text-decoration: underline;
       }
 
       .assistant-table {
@@ -892,10 +920,6 @@
         display: none;
       }
 
-      .save-conversation-setting.hidden {
-        display: none !important;
-      }
-
       .preview-box {
         display: none;
         max-width: 220px;
@@ -1025,32 +1049,41 @@
 
       .settings-header {
         grid-column: 1 / -1;
-        overflow: hidden;
-        padding: 24px;
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        background:
-          radial-gradient(circle at 92% 10%, rgba(124, 156, 255, 0.2), transparent 34%),
-          linear-gradient(135deg, var(--panel-soft), var(--panel));
-        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
+        padding: 0 0 10px;
       }
 
       .settings-header::before {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         color: var(--secondary);
         content: "PERSONALIZE YOUR WORKSPACE";
-        font-size: 0.7rem;
+        font-family: "Inter", "Aptos", "Segoe UI", sans-serif;
+        font-size: 0.72rem;
         font-weight: 800;
-        letter-spacing: 0.13em;
+        letter-spacing: 0.16em;
+      }
+
+      .settings-header::after {
+        display: block;
+        width: 68px;
+        height: 3px;
+        margin-top: 14px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        content: "";
       }
 
       .settings-header h2 {
         margin: 0;
-        color: var(--text);
-        font-size: clamp(1.5rem, 3vw, 1.9rem);
-        font-weight: 750;
-        letter-spacing: -0.045em;
+        font-family: "Aptos Display", "Inter", "Segoe UI", sans-serif;
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        font-weight: 850;
+        line-height: 1.05;
+        letter-spacing: -0.06em;
+        background: linear-gradient(105deg, var(--text) 8%, var(--primary) 58%, var(--secondary));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
 
       .settings-header p {
@@ -1136,7 +1169,7 @@
         }
 
         .settings-header {
-          padding: 20px;
+          padding: 0 0 8px;
         }
       }
 
@@ -1457,7 +1490,7 @@
         display: flex;
         flex-direction: column;
         min-height: 0;
-        gap: 12px;
+        gap: 8px;
         padding: 14px 10px;
         background:
           radial-gradient(circle at 15% 4%, rgba(177, 138, 255, 0.22), transparent 32%),
@@ -1476,25 +1509,77 @@
         font-weight: 700;
       }
 
+      .sidebar-brand > span {
+        flex: 1;
+        font-family: "Inter", "Aptos Display", "Segoe UI", sans-serif;
+        font-size: 1.02rem;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+      }
+
       .sidebar-brand .app-logo {
-        width: 34px;
-        height: 34px;
-        flex-basis: 34px;
-        padding: 4px;
-        border-radius: 11px;
-        border-color: rgba(53, 224, 208, 0.8);
-        background: linear-gradient(145deg, #5630bf, #171f38);
-        box-shadow: 0 0 22px rgba(53, 224, 208, 0.14);
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        padding: 2px;
+        border-radius: 13px;
+        border-color: rgba(103, 232, 249, 0.72);
+        background: linear-gradient(145deg, #20164b, #101a31 72%);
+        box-shadow: 0 0 0 3px rgba(103, 232, 249, 0.06), 0 8px 20px rgba(4, 10, 25, 0.32), 0 0 20px rgba(34, 211, 238, 0.16);
+      }
+
+      .sidebar-brand:hover .app-logo {
+        transform: rotate(4deg) translateY(-2px);
+        box-shadow: 0 0 0 4px rgba(103, 232, 249, 0.09), 0 10px 24px rgba(4, 10, 25, 0.38), 0 0 26px rgba(34, 211, 238, 0.24);
+      }
+
+      .sidebar-toggle {
+        display: grid;
+        flex: 0 0 36px;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted);
+        box-shadow: none;
+      }
+
+      .sidebar-toggle:hover,
+      .sidebar-toggle:focus-visible {
+        border-color: var(--border);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        transform: none;
+      }
+
+      .sidebar-toggle svg {
+        width: 19px;
+        height: 19px;
       }
 
       .new-chat-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         width: 100%;
-        padding: 10px 12px;
+        height: 36px;
+        min-height: 36px;
+        box-sizing: border-box;
+        padding: 8px 12px;
         text-align: left;
         color: var(--text);
         background: linear-gradient(110deg, rgba(128, 87, 245, 0.26), rgba(32, 191, 201, 0.12));
         border: 1px solid rgba(177, 138, 255, 0.32);
         box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 8px 20px rgba(8, 8, 28, 0.18);
+      }
+
+      .new-chat-btn svg {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
       }
 
       .new-chat-btn:hover {
@@ -1506,19 +1591,31 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 3px;
+        gap: 8px;
         padding: 0;
         border: 0;
         background: transparent;
       }
 
       .tab-btn {
-        padding: 9px 11px;
+        display: flex;
+        gap: 11px;
+        height: 36px;
+        min-height: 36px;
+        box-sizing: border-box;
+        padding: 8px 11px;
         border: 0;
         border-radius: 8px;
         text-align: left;
         align-items: center;
         color: var(--muted);
+      }
+
+      .tab-btn .nav-icon {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        color: var(--secondary);
       }
 
       .tab-btn:hover,
@@ -1531,19 +1628,32 @@
       }
 
       .sidebar-history-heading {
-        padding: 6px 9px 0;
+        padding: 8px 9px 0;
         color: var(--muted);
         font-size: 0.76rem;
         font-weight: 700;
+        letter-spacing: 0.035em;
       }
 
       .conversation-list {
         min-height: 0;
         flex: 1;
         overflow-y: auto;
+        scrollbar-width: none;
         margin: 0;
         padding: 0;
         list-style: none;
+      }
+
+      .conversation-list::-webkit-scrollbar {
+        display: none;
+      }
+
+      .conversation-item {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin: 1px 5px;
       }
 
       .conversation-list button {
@@ -1563,11 +1673,105 @@
         font-weight: 400;
       }
 
-      .conversation-list button:hover,
-      .conversation-list button.active {
+      .conversation-list .conversation-open-button {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+      }
+
+      .conversation-list .conversation-open-button:hover,
+      .conversation-list .conversation-open-button.active {
         background: linear-gradient(90deg, rgba(177, 138, 255, 0.15), rgba(53, 224, 208, 0.06));
         color: var(--text);
         transform: none;
+      }
+
+      .conversation-list .conversation-delete-button {
+        display: grid;
+        flex: 0 0 24px;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        padding: 0;
+        color: var(--muted);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+      }
+
+      .conversation-item:hover .conversation-delete-button,
+      .conversation-item:focus-within .conversation-delete-button {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .conversation-list .conversation-delete-button:hover,
+      .conversation-list .conversation-delete-button:focus-visible {
+        background: rgba(239, 68, 68, 0.14);
+        color: #f87171;
+        outline: 2px solid rgba(248, 113, 113, 0.65);
+        outline-offset: 1px;
+      }
+
+      .conversation-delete-button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      @media (hover: none) {
+        .conversation-list .conversation-delete-button {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+
+      .chat-shell.sidebar-collapsed {
+        grid-template-columns: 76px minmax(0, 1fr);
+      }
+
+      .sidebar-collapsed .app-sidebar {
+        align-items: center;
+        padding-right: 9px;
+        padding-left: 9px;
+      }
+
+      .sidebar-collapsed .sidebar-brand {
+        width: 100%;
+        flex-direction: column;
+        gap: 8px;
+        padding: 4px 0 10px;
+      }
+
+      .sidebar-collapsed .sidebar-brand > span,
+      .sidebar-collapsed .new-chat-label,
+      .sidebar-collapsed .nav-label,
+      .sidebar-collapsed .sidebar-history-heading,
+      .sidebar-collapsed .conversation-list {
+        display: none;
+      }
+
+      .sidebar-collapsed .new-chat-btn {
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+      }
+
+      .sidebar-collapsed .tab-buttons {
+        align-items: center;
+      }
+
+      .sidebar-collapsed .tab-btn {
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        border-left: 0;
+      }
+
+      .sidebar-collapsed .tab-btn:hover,
+      .sidebar-collapsed .tab-btn.active {
+        border-left: 0;
       }
 
       .account-panel {
@@ -1902,13 +2106,6 @@
         gap: 12px;
       }
 
-      .quick-start-label {
-        color: var(--secondary);
-        font-size: 0.7rem;
-        font-weight: 800;
-        letter-spacing: 0.14em;
-      }
-
       .quick-start-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1951,17 +2148,30 @@
         .app-shell { min-height: 0; height: 100dvh; }
         .chat-shell { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
         .app-sidebar {
-          gap: 6px;
+          flex-direction: row;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
           padding: 7px 10px;
           border-right: 0;
           border-bottom: 1px solid var(--border);
         }
-        .sidebar-brand { display: none; }
-        .new-chat-btn { width: auto; align-self: flex-start; }
-        .tab-buttons { flex-direction: row; overflow-x: auto; }
+        .sidebar-brand {
+          display: flex;
+          flex: 1 0 100%;
+          justify-content: space-between;
+          padding: 0 4px 4px;
+        }
+        .new-chat-btn { width: auto; align-self: center; }
+        .tab-buttons { flex: 1; min-width: 0; flex-direction: row; overflow-x: auto; }
         .tab-btn { flex: 0 0 auto; padding: 7px 9px; font-size: 0.8rem; }
-        .sidebar-history-heading,
-        .conversation-list { display: none; }
+        .sidebar-history-heading { display: block; flex: 0 0 100%; padding: 4px 4px 0; }
+        .conversation-list { display: block; flex: 0 0 100%; max-height: min(22vh, 150px); overflow-y: auto; }
+        .chat-shell.sidebar-collapsed { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+        .chat-shell.sidebar-collapsed .app-sidebar { align-items: stretch; padding: 7px 10px; }
+        .chat-shell.sidebar-collapsed .sidebar-brand { flex-direction: row; padding: 0 4px 4px; }
+        .chat-shell.sidebar-collapsed .sidebar-brand > span { display: block; }
+        .chat-shell.sidebar-collapsed .app-sidebar > :not(.sidebar-brand) { display: none !important; }
         .settings-account {
           grid-template-columns: 1fr;
           gap: 10px;
@@ -1983,6 +2193,96 @@
         .quick-start-grid { grid-template-columns: 1fr; }
         .quick-start-btn { min-height: 68px; }
       }
+
+      .chat-export-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .export-print-view {
+        display: none;
+      }
+
+      @media print {
+        @page {
+          margin: 18mm;
+        }
+
+        body {
+          background: #fff !important;
+          color: #111827;
+        }
+
+        body::before {
+          display: none !important;
+        }
+
+        body > :not(.export-print-view) {
+          display: none !important;
+        }
+
+        body > .export-print-view {
+          display: block !important;
+          color: #111827;
+          font: 11pt/1.55 Arial, sans-serif;
+        }
+
+        .export-print-view h1 {
+          margin: 0 0 4pt;
+          font-size: 20pt;
+        }
+
+        .export-print-date {
+          margin: 0 0 20pt;
+          color: #4b5563;
+          font-size: 9pt;
+        }
+
+        .export-print-message {
+          margin: 0 0 14pt;
+          padding: 0 0 10pt;
+          border-bottom: 1px solid #d1d5db;
+        }
+
+        .export-print-message h2 {
+          margin: 0 0 5pt;
+          color: #1d4ed8;
+          font-size: 12pt;
+        }
+
+        .export-print-message .message-content {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+        }
+
+        .export-print-message .assistant-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        .export-print-message .assistant-table th,
+        .export-print-message .assistant-table td {
+          border: 1px solid #9ca3af;
+          padding: 4pt 6pt;
+        }
+
+        .export-print-message .generated-image-result {
+          width: 100%;
+          max-width: 6.5in;
+        }
+
+        .export-print-message .generated-image-result img {
+          max-height: 6.5in;
+          object-fit: contain;
+          box-shadow: none;
+        }
+
+        .export-print-message .generated-image-download {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -2001,26 +2301,79 @@
       </div>
 
       <main class="chat-shell">
-        <aside class="app-sidebar" aria-label="Main navigation">
+        <aside id="appSidebar" class="app-sidebar" aria-label="Main navigation">
           <div class="sidebar-brand">
-            <svg class="app-logo" viewBox="0 0 24 24" fill="none" aria-label="Chatbot logo" role="img">
-              <path d="M12 3.2v2.1" stroke="#67e8f9" stroke-width="1.4" stroke-linecap="round"></path>
-              <circle cx="12" cy="2.4" r="1.2" fill="#67e8f9"></circle>
-              <rect x="4.7" y="5.2" width="14.6" height="13.2" rx="4.2" fill="#22d3ee"></rect>
-              <circle cx="9.2" cy="10.8" r="1.35" fill="#0f172a"></circle>
-              <circle cx="14.8" cy="10.8" r="1.35" fill="#0f172a"></circle>
+            <svg class="app-logo" viewBox="0 0 40 40" fill="none" aria-label="Taraksh GPT logo" role="img">
+              <defs>
+                <linearGradient id="brandBot" x1="8" y1="9" x2="31" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#67E8F9"></stop>
+                  <stop offset="0.55" stop-color="#38BDF8"></stop>
+                  <stop offset="1" stop-color="#A78BFA"></stop>
+                </linearGradient>
+                <linearGradient id="brandFace" x1="13" y1="15" x2="27" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#17233D"></stop>
+                  <stop offset="1" stop-color="#11152B"></stop>
+                </linearGradient>
+              </defs>
+              <path d="M8.2 19.8c0-6.1 4.8-11 10.8-11h2c6 0 10.8 4.9 10.8 11v5.1c0 3.2-2.6 5.8-5.8 5.8H14c-3.2 0-5.8-2.6-5.8-5.8v-5.1Z" fill="url(#brandBot)"></path>
+              <path d="M13 20c0-3.9 3.1-7 7-7s7 3.1 7 7v2.7c0 2.4-1.9 4.3-4.3 4.3h-5.4c-2.4 0-4.3-1.9-4.3-4.3V20Z" fill="url(#brandFace)"></path>
+              <path d="M20 8.5V6" stroke="#A5F3FC" stroke-width="1.8" stroke-linecap="round"></path>
+              <circle cx="20" cy="5.2" r="1.7" fill="#A5F3FC"></circle>
+              <circle cx="17.3" cy="20.2" r="1.35" fill="#67E8F9"></circle>
+              <circle cx="22.7" cy="20.2" r="1.35" fill="#67E8F9"></circle>
+              <path d="M17.3 24h5.4" stroke="#C4B5FD" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="m31.8 8 .8 2.1 2.1.8-2.1.8-.8 2.1-.8-2.1-2.1-.8 2.1-.8.8-2.1Z" fill="#FDE68A"></path>
+              <circle cx="7" cy="12" r="1" fill="#A5F3FC" opacity=".8"></circle>
             </svg>
             <span>Taraksh GPT</span>
+            <button id="sidebarToggleButton" class="sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-controls="appSidebar" aria-expanded="true" title="Collapse sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="16" rx="3"></rect>
+                <path d="M9 4v16"></path>
+              </svg>
+            </button>
           </div>
-          <button id="newChatButton" class="new-chat-btn" type="button">＋ New chat</button>
+          <button id="newChatButton" class="new-chat-btn" type="button" aria-label="New chat" title="New chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L9 17l-4 1 1-4Z"></path>
+              <path d="M15 5l4 4"></path>
+            </svg>
+            <span class="new-chat-label">New chat</span>
+          </button>
           <nav class="tab-buttons" aria-label="Workspace">
-            <button class="tab-btn active" type="button" data-tab="chat">Chat</button>
-            <button class="tab-btn" type="button" data-tab="code">Code</button>
-            <button class="tab-btn" type="button" data-tab="calculator">Calculator</button>
-            <button class="tab-btn" type="button" data-tab="settings">Settings</button>
+            <button class="tab-btn active" type="button" data-tab="chat" aria-label="Chat" title="Chat">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l-2 2v-6a7.5 7.5 0 1 1 17-3.5Z"></path>
+              </svg>
+              <span class="nav-label">Chat</span>
+            </button>
+            <button class="tab-btn" type="button" data-tab="code" aria-label="Code" title="Code">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m8 8-4 4 4 4"></path>
+                <path d="m16 8 4 4-4 4"></path>
+                <path d="m14 5-4 14"></path>
+              </svg>
+              <span class="nav-label">Code</span>
+            </button>
+            <button class="tab-btn" type="button" data-tab="calculator" aria-label="Calculator" title="Calculator">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+                <path d="M8 7h8"></path>
+                <path d="M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"></path>
+              </svg>
+              <span class="nav-label">Calculator</span>
+            </button>
+            <button class="tab-btn" type="button" data-tab="settings" aria-label="Settings" title="Settings">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"></path>
+                <path d="m19.4 15 .1.1 1.3 1-1.3 2.3-1.6-.6a8 8 0 0 1-1.5.9l-.2 1.7h-2.6l-.3-1.7a8 8 0 0 1-1.5-.9l-1.6.6-1.3-2.3 1.3-1a7 7 0 0 1 0-1.8l-1.3-1 1.3-2.3 1.6.6a8 8 0 0 1 1.5-.9l.3-1.7h2.6l.2 1.7a8 8 0 0 1 1.5.9l1.6-.6 1.3 2.3-1.3 1a7 7 0 0 1-.1 1.8Z"></path>
+              </svg>
+              <span class="nav-label">Settings</span>
+            </button>
           </nav>
-          <div class="sidebar-history-heading">Your chats</div>
-          <ul id="conversationList" class="conversation-list" aria-label="Saved conversations"></ul>
+          <div class="sidebar-history-heading">Recents</div>
+          <ul id="conversationList" class="conversation-list" aria-label="Recent conversations"></ul>
         </aside>
 
         <div class="workspace">
@@ -2190,9 +2543,13 @@
             <span class="label-text">Start fresh</span>
             <button id="clearChatButton" class="secondary-btn danger-btn" type="button">Clear chat</button>
           </div>
-          <div class="settings-box save-conversation-setting">
-            <span class="label-text">Save conversation</span>
-            <button id="downloadChatButton" class="secondary-btn" type="button">Download</button>
+          <div class="settings-box">
+            <span class="label-text">Export conversation</span>
+            <div class="chat-export-actions" aria-label="Conversation export formats">
+              <button id="downloadChatTextButton" class="secondary-btn" type="button" title="Download as plain text">TXT</button>
+              <button id="downloadChatMarkdownButton" class="secondary-btn" type="button" title="Download as Markdown">Markdown</button>
+              <button id="printChatButton" class="secondary-btn" type="button" title="Print or save as PDF">PDF</button>
+            </div>
           </div>
           <div class="settings-box">
             <span class="label-text">Restore defaults</span>
@@ -2277,6 +2634,8 @@
     <script src="config.js"></script>
     <script>
       const chatMessages = document.getElementById('chatMessages');
+      const chatShell = document.querySelector('.chat-shell');
+      const sidebarToggleButton = document.getElementById('sidebarToggleButton');
       const scrollBottomButton = document.getElementById('scrollBottomButton');
       const chatForm = document.getElementById('chatForm');
       const messageInput = document.getElementById('messageInput');
@@ -2305,6 +2664,22 @@
         calculator: document.getElementById('calculatorPanel'),
         settings: document.getElementById('settingsPanel')
       };
+
+      function setSidebarCollapsed(collapsed) {
+        if (!chatShell || !sidebarToggleButton) return;
+        const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+        chatShell.classList.toggle('sidebar-collapsed', collapsed);
+        sidebarToggleButton.setAttribute('aria-expanded', String(!collapsed));
+        sidebarToggleButton.setAttribute('aria-label', label);
+        sidebarToggleButton.title = label;
+        localStorage.setItem('chatbot-sidebar-collapsed', String(collapsed));
+      }
+
+      if (sidebarToggleButton) {
+        sidebarToggleButton.addEventListener('click', () => {
+          setSidebarCollapsed(!chatShell.classList.contains('sidebar-collapsed'));
+        });
+      }
       const themeToggle = document.getElementById('themeToggle');
       const boldToggle = document.getElementById('boldToggle');
       const fontSelect = document.getElementById('fontSelect');
@@ -2320,7 +2695,9 @@
       const historyTotalMessages = document.getElementById('historyTotalMessages');
       const historyAssistantReplies = document.getElementById('historyAssistantReplies');
       const historyUserPrompts = document.getElementById('historyUserPrompts');
-      const downloadChatButton = document.getElementById('downloadChatButton');
+      const downloadChatTextButton = document.getElementById('downloadChatTextButton');
+      const downloadChatMarkdownButton = document.getElementById('downloadChatMarkdownButton');
+      const printChatButton = document.getElementById('printChatButton');
       const clearChatButton = document.getElementById('clearChatButton');
       const resetSettingsButton = document.getElementById('resetSettingsButton');
       const codeLanguage = document.getElementById('codeLanguage');
@@ -2378,6 +2755,9 @@
         javascript: 'const name = "world";\nconsole.log(`Hello, ${name}!`);'
       };
       const messageLog = [];
+      const MAX_SAVED_CHATS = 1000;
+      const CHAT_LIMIT_ERROR = 'You have reached the 1,000-chat limit. Delete a chat from Recents before creating another. Paid upgrades are not available yet.';
+      const MAX_GENERATED_IMAGE_DATA_URL_LENGTH = 150000;
       const guestChatsStorageKey = 'chatbot-guest-chats';
       const authStorageKey = 'chatbot-account-session';
       const authCookieName = 'taraksh-gpt-session';
@@ -2653,12 +3033,6 @@
           updateAccountUi();
           if (accountStatus) accountStatus.textContent = `Guest mode · ${error.message}`;
         }
-      }
-
-      function syncApiModeUi() {
-        const apiModeEnabled = replyModeToggle ? replyModeToggle.checked : true;
-        const saveConversationSetting = document.querySelector('.save-conversation-setting');
-        if (saveConversationSetting) saveConversationSetting.classList.toggle('hidden', apiModeEnabled);
       }
 
       async function getGroqReply(message) {
@@ -2963,48 +3337,44 @@
 
       function currentChatRecord() {
         const existingChat = savedChats.find((chat) => chat.id === currentChatId);
-        const firstPrompt = messageLog.find((entry) => entry.role === 'user')?.content || '';
-        const title = firstPrompt.replace(/\s+/g, ' ').trim().slice(0, 60) || 'New chat';
+        const fallbackTitle = getFallbackChatTitle(messageLog);
+        const title = existingChat?.title || fallbackTitle;
         return {
           id: currentChatId,
           title,
-          messages: messageLog.map((entry) => ({
-            role: entry.role,
-            content: entry.content,
-            feedback: entry.feedback || null
-          })),
+          messages: messageLog.map((entry) => {
+            const savedMessage = {
+              role: entry.role,
+              content: entry.content,
+              feedback: entry.feedback || null
+            };
+            if (entry.imageDataUrl) {
+              savedMessage.imageDataUrl = entry.imageDataUrl;
+              savedMessage.imagePrompt = entry.imagePrompt || '';
+            }
+            return savedMessage;
+          }),
           createdAt: existingChat?.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
       }
 
-      function renderConversationList() {
-        if (!conversationList) return;
-        conversationList.innerHTML = '';
-        savedChats
-          .slice()
-          .sort((left, right) => String(right.updatedAt || '').localeCompare(String(left.updatedAt || '')))
-          .forEach((chat) => {
-            const item = document.createElement('li');
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.classList.toggle('active', chat.id === currentChatId);
-            button.textContent = chat.title || 'New chat';
-            button.title = button.textContent;
-            button.addEventListener('click', () => openConversation(chat.id));
-            item.appendChild(button);
-            conversationList.appendChild(item);
-          });
+      function showChatLimitNotice() {
+        window.alert(`You've reached the limit of ${MAX_SAVED_CHATS} saved chats. Paid upgrades are not available yet. Delete a conversation from Recents to free up space, then start a new chat.`);
       }
 
-      async function persistCurrentConversation() {
-        if (isRestoringConversation || !messageLog.some((entry) => entry.role === 'user')) return;
-        const chat = currentChatRecord();
-        const index = savedChats.findIndex((entry) => entry.id === chat.id);
-        if (index < 0) savedChats.push(chat);
-        else savedChats[index] = chat;
-        renderConversationList();
+      function canCreateConversation() {
+        if (savedChats.some((chat) => chat.id === currentChatId) || savedChats.length < MAX_SAVED_CHATS) return true;
+        showChatLimitNotice();
+        return false;
+      }
 
+      function getFallbackChatTitle(messages) {
+        const firstPrompt = messages.find((entry) => entry.role === 'user')?.content || '';
+        return firstPrompt.replace(/\s+/g, ' ').trim().slice(0, 60) || 'New chat';
+      }
+
+      function persistChatRecord(chat) {
         if (!accountSession) {
           try {
             localStorage.setItem(guestChatsStorageKey, JSON.stringify(savedChats));
@@ -3021,7 +3391,124 @@
         })).catch((error) => {
           console.error('Could not save server chat history.', error);
           if (accountStatus) accountStatus.textContent = `History sync failed: ${error.message}`;
+          if (error.message === CHAT_LIMIT_ERROR) showChatLimitNotice();
         });
+      }
+
+      function cleanGeneratedChatTitle(value) {
+        return String(value || '')
+          .split('\n')[0]
+          .replace(/^\s*(?:chat\s+)?title\s*:\s*/i, '')
+          .replace(/^[\s"'`#*]+|[\s"'`#*]+$/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 60);
+      }
+
+      async function generateChatTitle(prompt, reply) {
+        const proxyUrl = getGroqProxyUrl();
+        if (!proxyUrl) return '';
+
+        const response = await fetch(proxyUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'openai/gpt-oss-20b',
+            messages: [
+              {
+                role: 'system',
+                content: 'Create a concise, specific title for this conversation in 3 to 6 words. Use the user message and assistant reply to identify the main topic or task. Return only the title, with no quotes, prefix, or punctuation at the end.'
+              },
+              {
+                role: 'user',
+                content: `User message:\n${prompt.slice(0, 2000)}\n\nAssistant reply:\n${reply.slice(0, 2000)}`
+              }
+            ],
+            temperature: 0.2,
+            max_completion_tokens: 128,
+            reasoning_effort: 'low'
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error?.message || 'The title service did not respond.');
+        }
+
+        const title = cleanGeneratedChatTitle(data.choices?.[0]?.message?.content);
+        if (!title) throw new Error('The model returned an empty chat title.');
+        return title;
+      }
+
+      async function generateAndSaveChatTitle(chatId, prompt, reply) {
+        try {
+          const title = await generateChatTitle(prompt, reply);
+          if (!title) return;
+          const chat = savedChats.find((entry) => entry.id === chatId);
+          if (!chat) return;
+          chat.title = title;
+          renderConversationList();
+          persistChatRecord(chat);
+        } catch (error) {
+          console.error('Could not generate an AI chat title.', error);
+        }
+      }
+
+      function renderConversationList() {
+        if (!conversationList) return;
+        conversationList.innerHTML = '';
+        savedChats
+          .slice()
+          .sort((left, right) => String(right.updatedAt || '').localeCompare(String(left.updatedAt || '')))
+          .forEach((chat) => {
+            const item = document.createElement('li');
+            item.className = 'conversation-item';
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'conversation-open-button';
+            button.classList.toggle('active', chat.id === currentChatId);
+            button.textContent = chat.title || 'New chat';
+            button.title = button.textContent;
+            button.addEventListener('click', () => openConversation(chat.id));
+
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'conversation-delete-button';
+            deleteButton.title = `Delete "${button.textContent}"`;
+            deleteButton.setAttribute('aria-label', deleteButton.title);
+            deleteButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="m19 6-1 14H6L5 6"></path><path d="M10 11v5M14 11v5"></path></svg>';
+            deleteButton.addEventListener('click', async () => {
+              if (isReplying || !window.confirm(`Delete "${button.textContent}"? This cannot be undone.`)) return;
+              try {
+                await deleteCurrentConversation(chat.id);
+                if (currentChatId === chat.id) {
+                  currentChatId = createChatId();
+                  messageLog.length = 0;
+                  chatMessages.innerHTML = '';
+                  showWelcomeMessage();
+                  renderHistory();
+                }
+              } catch (error) {
+                console.error('Could not delete saved chat.', error);
+                if (accountStatus) accountStatus.textContent = `Could not delete saved chat: ${error.message}`;
+              }
+            });
+            item.append(button, deleteButton);
+            conversationList.appendChild(item);
+          });
+      }
+
+      async function persistCurrentConversation() {
+        if (isRestoringConversation || !messageLog.some((entry) => entry.role === 'user')) return;
+        if (!canCreateConversation()) return;
+        const chat = currentChatRecord();
+        const index = savedChats.findIndex((entry) => entry.id === chat.id);
+        if (index < 0) savedChats.push(chat);
+        else savedChats[index] = chat;
+        renderConversationList();
+        persistChatRecord(chat);
       }
 
       async function openConversation(id) {
@@ -3042,7 +3529,7 @@
         chatMessages.innerHTML = '';
         isRestoringConversation = true;
         chat.messages.forEach((entry) => {
-          addMessage(entry.role, entry.content);
+          addMessage(entry.role, entry.content, entry.imageDataUrl, entry.imagePrompt);
           if (entry.role === 'assistant' && entry.feedback) {
             messageLog[messageLog.length - 1].feedback = entry.feedback;
             const actions = chatMessages.lastElementChild?.querySelector('.message-actions');
@@ -3059,6 +3546,17 @@
         renderHistory();
         tabButtons.forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === 'chat'));
         Object.entries(panels).forEach(([key, panel]) => panel.classList.toggle('active', key === 'chat'));
+
+        if (replyModeToggle?.checked && chat.title === getFallbackChatTitle(chat.messages)) {
+          const firstUserIndex = chat.messages.findIndex((entry) => entry.role === 'user');
+          const firstUserMessage = chat.messages[firstUserIndex];
+          const firstAssistantMessage = chat.messages
+            .slice(firstUserIndex + 1)
+            .find((entry) => entry.role === 'assistant');
+          if (firstUserMessage && firstAssistantMessage) {
+            void generateAndSaveChatTitle(chat.id, firstUserMessage.content, firstAssistantMessage.content);
+          }
+        }
       }
 
       function showWelcomeMessage() {
@@ -3071,12 +3569,7 @@
         ];
         const welcome = document.createElement('section');
         welcome.className = 'welcome-message empty-chat-state';
-        welcome.setAttribute('aria-label', 'Quick-start prompts');
-
-        const label = document.createElement('span');
-        label.className = 'quick-start-label';
-        label.textContent = 'QUICK START';
-        welcome.appendChild(label);
+        welcome.setAttribute('aria-label', 'Suggested prompts');
 
         const grid = document.createElement('div');
         grid.className = 'quick-start-grid';
@@ -3100,13 +3593,14 @@
       }
 
       async function deleteCurrentConversation(id) {
-        savedChats = savedChats.filter((chat) => chat.id !== id);
+        const remainingChats = savedChats.filter((chat) => chat.id !== id);
         if (accountSession) {
           await chatSaveQueue;
           await accountRequest(`/api/chats/${encodeURIComponent(id)}`, { method: 'DELETE' });
         } else {
-          localStorage.setItem(guestChatsStorageKey, JSON.stringify(savedChats));
+          localStorage.setItem(guestChatsStorageKey, JSON.stringify(remainingChats));
         }
+        savedChats = remainingChats;
         renderConversationList();
       }
 
@@ -3144,7 +3638,34 @@
         });
       }
 
-      function addMessage(role, content) {
+      function isValidGeneratedImageDataUrl(value) {
+        return typeof value === 'string' &&
+          value.length <= MAX_GENERATED_IMAGE_DATA_URL_LENGTH &&
+          /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(value);
+      }
+
+      function createGeneratedImageFigure(imageDataUrl, imagePrompt, includeDownload = true) {
+        const figure = document.createElement('figure');
+        figure.className = 'generated-image-result';
+
+        const image = document.createElement('img');
+        image.src = imageDataUrl;
+        image.alt = `AI-generated image${imagePrompt ? `: ${imagePrompt.slice(0, 180)}` : ''}`;
+        figure.appendChild(image);
+
+        if (includeDownload) {
+          const downloadLink = document.createElement('a');
+          downloadLink.className = 'generated-image-download';
+          downloadLink.href = imageDataUrl;
+          downloadLink.download = `taraksh-gpt-image-${new Date().toISOString().slice(0, 10)}.jpg`;
+          downloadLink.textContent = 'Download image';
+          figure.appendChild(downloadLink);
+        }
+
+        return figure;
+      }
+
+      function addMessage(role, content, imageDataUrl = '', imagePrompt = '') {
         chatMessages.querySelector('.welcome-message')?.remove();
         const displayContent = role === 'assistant' ? cleanAssistantText(content) : content;
         const messageShell = document.createElement('div');
@@ -3159,12 +3680,20 @@
           contentEl.textContent = displayContent;
         }
         el.appendChild(contentEl);
+        if (role === 'assistant' && isValidGeneratedImageDataUrl(imageDataUrl)) {
+          el.appendChild(createGeneratedImageFigure(imageDataUrl, imagePrompt));
+        }
         messageShell.appendChild(el);
         if (role === 'assistant') addAssistantActions(messageShell);
         if (role === 'user') addEditButton(messageShell);
         chatMessages.appendChild(messageShell);
 
-        messageLog.push({ role, content, feedback: null });
+        const entry = { role, content, feedback: null };
+        if (role === 'assistant' && isValidGeneratedImageDataUrl(imageDataUrl)) {
+          entry.imageDataUrl = imageDataUrl;
+          entry.imagePrompt = String(imagePrompt || '').slice(0, 2048);
+        }
+        messageLog.push(entry);
         renderHistory();
         scrollChatToBottom();
       }
@@ -3402,7 +3931,7 @@
         }
       }
 
-      function addTypingMessage(content) {
+      function addTypingMessage(content, imageDataUrl = '', imagePrompt = '') {
         const displayContent = cleanAssistantText(content);
         return new Promise((resolve) => {
           const el = document.createElement('div');
@@ -3423,9 +3952,16 @@
             scrollChatToBottom();
 
             if (index >= displayContent.length) {
+              renderAssistantContent(contentEl, displayContent);
               el.classList.remove('typing');
               addAssistantActions(messageShell);
-              messageLog.push({ role: 'assistant', content: displayContent, feedback: null });
+              const entry = { role: 'assistant', content: displayContent, feedback: null };
+              if (isValidGeneratedImageDataUrl(imageDataUrl)) {
+                el.appendChild(createGeneratedImageFigure(imageDataUrl, imagePrompt));
+                entry.imageDataUrl = imageDataUrl;
+                entry.imagePrompt = String(imagePrompt || '').slice(0, 2048);
+              }
+              messageLog.push(entry);
               renderHistory();
               scrollChatToBottom();
               resolve();
@@ -3478,6 +4014,103 @@
         } finally {
           URL.revokeObjectURL(imageUrl);
         }
+      }
+
+      function getImageGenerationPrompt(message) {
+        const promptText = String(message || '').trim();
+        const requestMatch = promptText.match(/^(?:please\s+)?(?:(?:can|could|would) you\s+)?(generate|create|make|draw|paint|illustrate)\b/i);
+        if (!requestMatch) return null;
+
+        const action = requestMatch[1].toLowerCase();
+        const hasImageTerm = /\b(?:image|picture|illustration|drawing|painting|photo|artwork|art)\b/i.test(promptText);
+        if (!hasImageTerm && !['draw', 'paint', 'illustrate'].includes(action)) return null;
+
+        return promptText
+          .replace(/^(?:please\s+)?(?:(?:can|could|would) you\s+)?(?:generate|create|make|draw|paint|illustrate)\b\s*/i, '')
+          .replace(/^(?:for me\s+|me\s+)?(?:an?\s+)?(?:image|picture|illustration|drawing|painting|photo|artwork|art)\b(?:\s+(?:of|showing|depicting|for))?\s*/i, '')
+          .replace(/^(?:of|showing|depicting)\s+/i, '')
+          .replace(/^(?:a|an|the)\s+/i, '')
+          .trim();
+      }
+
+      function optimizeGeneratedImage(blob) {
+        return new Promise((resolve, reject) => {
+          const sourceUrl = URL.createObjectURL(blob);
+          const image = new Image();
+          image.onload = () => {
+            URL.revokeObjectURL(sourceUrl);
+            try {
+              const maxDimension = 512;
+              let scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+              let width = Math.max(1, Math.round(image.naturalWidth * scale));
+              let height = Math.max(1, Math.round(image.naturalHeight * scale));
+              let quality = 0.76;
+              const canvas = document.createElement('canvas');
+              const context = canvas.getContext('2d');
+              if (!context) throw new Error('This browser could not prepare the generated image.');
+
+              const encode = () => {
+                canvas.width = width;
+                canvas.height = height;
+                context.fillStyle = '#fff';
+                context.fillRect(0, 0, width, height);
+                context.drawImage(image, 0, 0, width, height);
+                return canvas.toDataURL('image/jpeg', quality);
+              };
+
+              let dataUrl = encode();
+              while (dataUrl.length > MAX_GENERATED_IMAGE_DATA_URL_LENGTH && (Math.max(width, height) > 320 || quality > 0.5)) {
+                if (Math.max(width, height) > 320) {
+                  scale = Math.max(320 / Math.max(image.naturalWidth, image.naturalHeight), scale * 0.85);
+                  width = Math.max(1, Math.round(image.naturalWidth * scale));
+                  height = Math.max(1, Math.round(image.naturalHeight * scale));
+                } else {
+                  quality = Math.max(0.5, quality - 0.08);
+                }
+                dataUrl = encode();
+              }
+
+              if (dataUrl.length > MAX_GENERATED_IMAGE_DATA_URL_LENGTH) {
+                throw new Error('The generated image is too large to save with this chat. Try another prompt.');
+              }
+              resolve(dataUrl);
+            } catch (error) {
+              reject(error);
+            }
+          };
+          image.onerror = () => {
+            URL.revokeObjectURL(sourceUrl);
+            reject(new Error('The generated image could not be decoded.'));
+          };
+          image.src = sourceUrl;
+        });
+      }
+
+      async function generateImageFromPrompt(prompt) {
+        if (!prompt) throw new Error('Describe what you want the image to show.');
+        if (prompt.length > 2048) throw new Error('Image prompts must be 2048 characters or fewer.');
+        const proxyUrl = getGroqProxyUrl();
+        if (!proxyUrl) throw new Error('Image generation needs a configured Cloudflare Worker URL.');
+
+        const response = await fetch(`${proxyUrl}/api/images/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt })
+        });
+
+        if (!response.ok) {
+          const contentType = response.headers.get('Content-Type') || '';
+          const errorData = contentType.includes('application/json') ? await response.json() : null;
+          throw new Error(errorData?.error?.message || `Image generation failed (${response.status}).`);
+        }
+
+        const imageBlob = await response.blob();
+        if (!imageBlob.type.startsWith('image/') || !imageBlob.size) {
+          throw new Error('Workers AI returned an invalid image.');
+        }
+        return optimizeGeneratedImage(imageBlob);
       }
 
       const weatherDescriptions = {
@@ -4054,13 +4687,13 @@
           const apiModeEnabled = event.target.checked;
           localStorage.setItem('chatbot-reply-mode', apiModeEnabled ? 'api' : 'browser');
           if (replyModeLabel) replyModeLabel.textContent = apiModeEnabled ? 'Smart mode' : 'Normal mode';
-          syncApiModeUi();
         });
       }
 
       if (newChatButton) {
         newChatButton.addEventListener('click', () => {
           if (isReplying) return;
+          if (!canCreateConversation()) return;
           currentChatId = createChatId();
           messageLog.length = 0;
           chatMessages.innerHTML = '';
@@ -4329,15 +4962,95 @@
         summarizeChatButton.addEventListener('click', summarizeConversation);
       }
 
-      if (downloadChatButton) {
-        downloadChatButton.addEventListener('click', () => {
+      function downloadChatExport(content, mimeType, extension) {
+        const download = document.createElement('a');
+        const objectUrl = URL.createObjectURL(new Blob([content], { type: mimeType }));
+        download.href = objectUrl;
+        download.download = `chatbot-${new Date().toISOString().slice(0, 10)}.${extension}`;
+        download.click();
+        window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      }
+
+      function getChatMarkdown() {
+        const exportedAt = new Date().toLocaleString();
+        const messages = messageLog.map((entry) => {
+          const speaker = entry.role === 'user' ? 'You' : 'Chatbot';
+          const generatedImage = isValidGeneratedImageDataUrl(entry.imageDataUrl)
+            ? `\n\n![${(entry.imagePrompt || 'Generated image').replace(/[\[\]\r\n]/g, ' ')}](${entry.imageDataUrl})`
+            : '';
+          return `## ${speaker}\n\n${entry.content.trim()}${generatedImage}`;
+        });
+        return `# Chatbot conversation\n\n_Exported ${exportedAt}_\n\n${messages.join('\n\n---\n\n')}\n`;
+      }
+
+      function createChatPrintView() {
+        document.querySelector('.export-print-view')?.remove();
+        const printView = document.createElement('main');
+        printView.className = 'export-print-view';
+
+        const heading = document.createElement('h1');
+        heading.textContent = 'Chatbot conversation';
+        printView.appendChild(heading);
+
+        const exportedAt = document.createElement('p');
+        exportedAt.className = 'export-print-date';
+        exportedAt.textContent = `Exported ${new Date().toLocaleString()}`;
+        printView.appendChild(exportedAt);
+
+        messageLog.forEach((entry) => {
+          const message = document.createElement('section');
+          message.className = 'export-print-message';
+          const speaker = document.createElement('h2');
+          speaker.textContent = entry.role === 'user' ? 'You' : 'Chatbot';
+          message.appendChild(speaker);
+
+          const content = document.createElement('div');
+          content.className = 'message-content';
+          if (entry.role === 'assistant') {
+            renderAssistantContent(content, entry.content);
+          } else {
+            content.textContent = entry.content;
+          }
+          if (entry.role === 'assistant' && isValidGeneratedImageDataUrl(entry.imageDataUrl)) {
+            content.appendChild(createGeneratedImageFigure(entry.imageDataUrl, entry.imagePrompt, false));
+          }
+          message.appendChild(content);
+          printView.appendChild(message);
+        });
+
+        document.body.appendChild(printView);
+        return printView;
+      }
+
+      if (downloadChatTextButton) {
+        downloadChatTextButton.addEventListener('click', () => {
           if (!messageLog.length) return;
-          const transcript = messageLog.map((entry) => `${entry.role === 'user' ? 'You' : 'Chatbot'}:\n${entry.content}`).join('\n\n');
-          const download = document.createElement('a');
-          download.href = URL.createObjectURL(new Blob([transcript], { type: 'text/plain' }));
-          download.download = `chatbot-${new Date().toISOString().slice(0, 10)}.txt`;
-          download.click();
-          URL.revokeObjectURL(download.href);
+          const transcript = messageLog.map((entry) => {
+            const imageNote = isValidGeneratedImageDataUrl(entry.imageDataUrl) ? '\n[Generated image attached]' : '';
+            return `${entry.role === 'user' ? 'You' : 'Chatbot'}:\n${entry.content}${imageNote}`;
+          }).join('\n\n');
+          downloadChatExport(transcript, 'text/plain;charset=utf-8', 'txt');
+        });
+      }
+
+      if (downloadChatMarkdownButton) {
+        downloadChatMarkdownButton.addEventListener('click', () => {
+          if (!messageLog.length) return;
+          downloadChatExport(getChatMarkdown(), 'text/markdown;charset=utf-8', 'md');
+        });
+      }
+
+      if (printChatButton) {
+        printChatButton.addEventListener('click', () => {
+          if (!messageLog.length) return;
+          const printView = createChatPrintView();
+          const originalTitle = document.title;
+          document.title = 'Chatbot conversation';
+          window.addEventListener('afterprint', () => {
+            printView.remove();
+            document.title = originalTitle;
+          }, { once: true });
+          window.print();
         });
       }
 
@@ -4415,12 +5128,12 @@
       const initialTheme = savedTheme === 'light' ? 'light' : 'dark';
       applyTheme(initialTheme);
 
+      setSidebarCollapsed(localStorage.getItem('chatbot-sidebar-collapsed') === 'true');
+
       const savedReplyMode = localStorage.getItem('chatbot-reply-mode');
       const apiModeEnabled = savedReplyMode === 'api';
       if (replyModeToggle) replyModeToggle.checked = apiModeEnabled;
       if (replyModeLabel) replyModeLabel.textContent = apiModeEnabled ? 'Smart mode' : 'Normal mode';
-      syncApiModeUi();
-
       showWelcomeMessage();
       initializeAccount();
       updateAccountUi();
@@ -4432,14 +5145,18 @@
 
         const message = messageInput.value.trim();
         if (!message && !selectedFile) return;
+        if (!canCreateConversation()) return;
 
         isReplying = true;
         const attachedImage = selectedFile && selectedFile.type.startsWith('image/') ? selectedFile : null;
+        const imagePrompt = attachedImage ? null : getImageGenerationPrompt(message);
         const userMessage = selectedFile 
           ? `Attached file: ${selectedFile.name}${message ? '\n' + message : ''}`
           : message;
 
         addMessage('user', userMessage);
+        const shouldGenerateChatTitle = messageLog.filter((entry) => entry.role === 'user').length === 1;
+        const titleChatId = currentChatId;
 
         messageInput.value = '';
         fileInput.value = '';
@@ -4455,14 +5172,20 @@
         submitButton.innerHTML = '<span class="thinking-spinner" aria-hidden="true"><span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span></span>';
 
         let reply;
+        let generatedImageDataUrl = '';
         try {
-          reply = attachedImage
-            ? await recognizeImage(attachedImage)
-            : await createLocalReply(userMessage);
+          if (imagePrompt !== null) {
+            generatedImageDataUrl = await generateImageFromPrompt(imagePrompt);
+            reply = 'Here is your generated image.';
+          } else {
+            reply = attachedImage
+              ? await recognizeImage(attachedImage)
+              : await createLocalReply(userMessage);
+          }
         } catch (error) {
           reply = `I could not complete that request. ${error.message || 'Please check your internet connection and try again.'}`;
         }
-        await addTypingMessage(reply);
+        await addTypingMessage(reply, generatedImageDataUrl, imagePrompt || '');
         speakReply(reply);
         submitButton.disabled = false;
         submitButton.setAttribute('aria-label', 'Send message');
@@ -4470,6 +5193,9 @@
         submitButton.textContent = '➤';
         submitButton.style.transform = 'scale(1)';
         isReplying = false;
+        if (shouldGenerateChatTitle && replyModeToggle?.checked) {
+          void generateAndSaveChatTitle(titleChatId, userMessage, reply);
+        }
       });
 
       setupVoiceChat();

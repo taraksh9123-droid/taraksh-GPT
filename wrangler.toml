@@ -5,3 +5,6 @@ compatibility_date = "2026-11-23"
 [[d1_databases]]
 binding = "CHAT_HISTORY"
 database_id = "bfecf43b-229b-4830-85a6-9b034b94c294"
+
+[ai]
+binding = "AI"

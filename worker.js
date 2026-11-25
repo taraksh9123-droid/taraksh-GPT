@@ -1,6 +1,8 @@
 const SESSION_LIFETIME_SECONDS = 60 * 60 * 24 * 300;
 const SESSION_REFRESH_THRESHOLD_SECONDS = 60 * 60 * 24 * 30;
 const MAX_CHAT_BYTES = 750000;
+const MAX_SAVED_CHATS = 1000;
+const MAX_IMAGE_DATA_URL_LENGTH = 160000;
 
 function jsonResponse(data, status, corsHeaders) {
   return Response.json(data, { status, headers: corsHeaders });
@@ -248,6 +250,17 @@ function validateChat(body, pathId) {
         ![null, undefined, 'like', 'dislike'].includes(message.feedback)) {
       return 'The chat contains an invalid message.';
     }
+    if (message.imageDataUrl !== undefined &&
+        (message.role !== 'assistant' || typeof message.imageDataUrl !== 'string' ||
+         message.imageDataUrl.length > MAX_IMAGE_DATA_URL_LENGTH ||
+         !/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(message.imageDataUrl))) {
+      return 'The chat contains an invalid generated image.';
+    }
+    if (message.imagePrompt !== undefined &&
+        (message.role !== 'assistant' || typeof message.imagePrompt !== 'string' ||
+         message.imagePrompt.length > 2048 || message.imageDataUrl === undefined)) {
+      return 'The chat contains invalid generated image details.';
+    }
   }
   if (new TextEncoder().encode(JSON.stringify(body.messages)).length > MAX_CHAT_BYTES) {
     return 'This chat is too large to save.';
@@ -300,11 +313,31 @@ async function handleChats(request, env, url, corsHeaders) {
       ? body.createdAt
       : now;
     const title = typeof body.title === 'string' ? body.title.trim().slice(0, 120) : 'New chat';
-    await env.CHAT_HISTORY.prepare(
-      'INSERT INTO chats (id, user_id, title, messages, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ' +
+    const saveResult = await env.CHAT_HISTORY.prepare(
+      'INSERT INTO chats (id, user_id, title, messages, created_at, updated_at) ' +
+      'SELECT ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM chats WHERE id = ? AND user_id = ?) ' +
+      'OR (SELECT COUNT(*) FROM chats WHERE user_id = ?) < ? ' +
       'ON CONFLICT(id) DO UPDATE SET title = excluded.title, messages = excluded.messages, updated_at = excluded.updated_at ' +
       'WHERE chats.user_id = excluded.user_id'
-    ).bind(chatId, session.user_id, title || 'New chat', JSON.stringify(body.messages), createdAt, now).run();
+    ).bind(
+      chatId,
+      session.user_id,
+      title || 'New chat',
+      JSON.stringify(body.messages),
+      createdAt,
+      now,
+      chatId,
+      session.user_id,
+      session.user_id,
+      MAX_SAVED_CHATS
+    ).run();
+    if (saveResult.meta?.changes === 0) {
+      return errorResponse(
+        'You have reached the 1,000-chat limit. Delete a chat from Recents before creating another. Paid upgrades are not available yet.',
+        409,
+        corsHeaders
+      );
+    }
     return jsonResponse({ ok: true }, 200, corsHeaders);
   }
 
@@ -327,21 +360,55 @@ async function handleGroq(request, env, corsHeaders) {
     return errorResponse('Messages are required.', 400, corsHeaders);
   }
 
+  const groqRequestBody = {
+    model: body.model || 'openai/gpt-oss-20b',
+    messages: body.messages,
+    temperature: body.temperature ?? 0.7,
+    max_completion_tokens: body.max_completion_tokens ?? body.max_tokens ?? 1024
+  };
+  if (body.reasoning_effort !== undefined) {
+    groqRequestBody.reasoning_effort = body.reasoning_effort;
+  }
+
   const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${groqApiKey}`
     },
-    body: JSON.stringify({
-      model: body.model || 'openai/gpt-oss-20b',
-      messages: body.messages,
-      temperature: body.temperature ?? 0.7,
-      max_tokens: body.max_tokens ?? 1024
-    })
+    body: JSON.stringify(groqRequestBody)
   });
   const data = await groqResponse.json();
   return jsonResponse(data, groqResponse.status, corsHeaders);
+}
+
+async function handleImageGeneration(request, env, corsHeaders) {
+  if (!env.AI) {
+    return errorResponse('Workers AI binding AI is not configured. Add the AI binding to the Worker and deploy it.', 503, corsHeaders);
+  }
+
+  const body = await readJson(request);
+  if (!body) return errorResponse('Invalid JSON request.', 400, corsHeaders);
+  if (typeof body.prompt !== 'string' || !body.prompt.trim() || body.prompt.length > 2048) {
+    return errorResponse('An image prompt of 1 to 2048 characters is required.', 400, corsHeaders);
+  }
+
+  const result = await env.AI.run('@cf/black-forest-labs/flux-1-schnell', {
+    prompt: body.prompt.trim()
+  });
+  if (!result || typeof result.image !== 'string') {
+    return errorResponse('Workers AI returned no image.', 502, corsHeaders);
+  }
+
+  const imageBytes = Uint8Array.from(atob(result.image), (character) => character.charCodeAt(0));
+  return new Response(imageBytes, {
+    status: 200,
+    headers: {
+      ...corsHeaders,
+      'Cache-Control': 'no-store',
+      'Content-Type': 'image/jpeg'
+    }
+  });
 }
 
 export default {
@@ -380,6 +447,10 @@ export default {
       }
       if (url.pathname === '/auth/logout' && request.method === 'POST') {
         return await handleLogout(request, env, corsHeaders);
+      }
+      if (url.pathname === '/api/images/generate') {
+        if (request.method !== 'POST') return errorResponse('Method not allowed.', 405, corsHeaders);
+        return await handleImageGeneration(request, env, corsHeaders);
       }
       if (url.pathname === '/api/chats' || url.pathname.startsWith('/api/chats/')) {
         return await handleChats(request, env, url, corsHeaders);
