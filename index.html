@@ -1921,17 +1921,39 @@
 
       .auth-provider {
         display: grid;
-        min-height: 44px;
-        place-items: center;
+        grid-template-columns: minmax(0, 1fr);
+        place-items: stretch;
         padding: 8px;
+        gap: 0;
       }
 
       .auth-provider-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         width: 100%;
+        min-height: 44px;
+        margin: 0;
         border: 1px solid var(--border) !important;
         background: var(--panel-soft) !important;
         color: var(--text) !important;
         box-shadow: none !important;
+      }
+
+      .auth-provider-button:first-child {
+        border-radius: 12px 12px 0 0;
+      }
+
+      .auth-provider-button:last-child {
+        border-top: 0 !important;
+        border-radius: 0 0 12px 12px;
+      }
+
+      .auth-provider-button svg {
+        width: 19px;
+        height: 19px;
+        flex: 0 0 19px;
       }
 
       .auth-error {
@@ -1939,37 +1961,6 @@
         color: #fca5a5;
         font-size: 0.86rem;
         line-height: 1.45;
-      }
-
-      .auth-setup {
-        margin-top: 18px;
-        padding: 14px 15px;
-        border: 1px solid var(--border);
-        border-radius: 13px;
-        background: var(--panel-soft);
-      }
-
-      .auth-setup summary {
-        color: var(--text);
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 700;
-      }
-
-      .auth-setup ol {
-        margin: 12px 0 0;
-        padding-left: 20px;
-        color: var(--muted);
-        font-size: 0.81rem;
-        line-height: 1.55;
-      }
-
-      .auth-setup li + li { margin-top: 7px; }
-
-      .auth-setup a {
-        color: var(--secondary);
-        text-decoration: underline;
-        text-underline-offset: 2px;
       }
 
       .auth-guest {
@@ -2484,7 +2475,7 @@
                 <span>Sign in</span>
               </button>
               <button id="guestModeButton" type="button">Continue as guest</button>
-              <button id="signOutButton" type="button" hidden>Sign out</button>
+              <button id="signOutButton" type="button" hidden>Log out</button>
             </div>
           </section>
           <div class="settings-box">
@@ -2567,19 +2558,23 @@
           <h2 id="authTitle">Sign in to Taraksh GPT</h2>
           <p id="authDescription" class="auth-intro">Save your chats to your account and continue them on another device.</p>
           <div class="auth-provider">
-            <button id="googleSignInButton" class="auth-provider-button" type="button">Continue with Google</button>
-            <button id="githubSignInButton" class="auth-provider-button" type="button">Continue with GitHub</button>
+            <button id="googleSignInButton" class="auth-provider-button" type="button">
+              <svg viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.14-3.08-.41-4.55H24v9.02h12.88c-.58 2.96-2.26 5.48-4.76 7.18l7.73 5.99c4.51-4.17 7.13-10.32 7.13-17.64z"></path>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.81l-7.73-5.99c-2.15 1.45-4.91 2.3-8.17 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                <path fill="#FBBC05" d="M10.53 28.59A14.3 14.3 0 0 1 9.75 24c0-1.59.27-3.13.78-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.89.93 7.58 2.56 10.78l7.97-6.19z"></path>
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+            <button id="githubSignInButton" class="auth-provider-button" type="button">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.77 2.37 3.2 1.68.1-.72.39-1.21.7-1.49-2.48-.28-5.09-1.24-5.09-5.53 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.11-1.45 3.05-1.15 3.05-1.15.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.3-2.61 5.25-5.1 5.53.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"></path>
+              </svg>
+              <span>Continue with GitHub</span>
+            </button>
           </div>
           <p id="authError" class="auth-error" role="alert" hidden></p>
-          <details id="authSetupDetails" class="auth-setup" open>
-            <summary>Set up Google or GitHub sign-in and chat sync</summary>
-            <ol>
-              <li>For GitHub, create an <strong>OAuth App</strong> in <a href="https://github.com/settings/developers" target="_blank" rel="noopener noreferrer">GitHub Developer settings</a> and set its callback URL to your Worker URL plus <code>/auth/github/callback</code>. For Google, create a <strong>Web application</strong> OAuth client in <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer">Google Cloud Credentials</a> and add your Worker URL plus <code>/auth/google/callback</code> as an authorized redirect URI.</li>
-              <li>Set the provider's public client ID in <code>config.js</code> and its matching <code>*_CLIENT_ID</code> Worker variable. Store each client secret only as a Cloudflare Worker secret (<code>GITHUB_CLIENT_SECRET</code> or <code>GOOGLE_CLIENT_SECRET</code>); never put a secret in this website.</li>
-              <li>In <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare</a>, create a D1 database, run the SQL in <code>schema.sql</code>, and bind it to the Worker as <code>CHAT_HISTORY</code>.</li>
-              <li>Set Worker variable <code>ALLOWED_ORIGIN</code> to <code>https://taraksh9123-droid.github.io</code>, then deploy <code>worker.js</code>.</li>
-            </ol>
-          </details>
           <button id="authGuestButton" class="auth-guest" type="button">Continue as guest</button>
         </section>
       </div>
@@ -2652,7 +2647,8 @@
       const authGuestButton = document.getElementById('authGuestButton');
       const githubSignInButton = document.getElementById('githubSignInButton');
       const googleSignInButton = document.getElementById('googleSignInButton');
-      const authSetupDetails = document.getElementById('authSetupDetails');
+      const githubSignInLabel = githubSignInButton?.querySelector('span');
+      const googleSignInLabel = googleSignInButton?.querySelector('span');
       const authError = document.getElementById('authError');
       const fileInput = document.getElementById('fileInput');
       const attachButton = document.getElementById('attachButton');
@@ -2960,24 +2956,29 @@
         const githubConfigured = typeof window.GITHUB_CLIENT_ID === 'string' && window.GITHUB_CLIENT_ID.trim();
         const googleConfigured = typeof window.GOOGLE_CLIENT_ID === 'string' && window.GOOGLE_CLIENT_ID.trim();
         if (accountStatus) {
+          const providerName = accountSession?.user?.provider === 'google' ? 'Google' : 'GitHub';
+          const accountId = accountSession?.user?.email || accountSession?.user?.id || '';
           accountStatus.textContent = signedIn
-            ? accountSession.user.email || accountSession.user.name || 'Signed in'
+            ? `${providerName} account · ${accountId}`
             : '';
           accountStatus.title = accountStatus.textContent;
         }
         if (signInButton) signInButton.hidden = signedIn;
         if (guestModeButton) guestModeButton.hidden = signedIn || guestModeSelected;
         if (signOutButton) signOutButton.hidden = !signedIn;
-        if (authSetupDetails) authSetupDetails.open = !githubConfigured && !googleConfigured;
         if (githubSignInButton) {
           githubSignInButton.hidden = signedIn;
           githubSignInButton.disabled = !githubConfigured;
-          githubSignInButton.textContent = githubConfigured ? 'Continue with GitHub' : 'GitHub sign-in needs setup';
+          if (githubSignInLabel) {
+            githubSignInLabel.textContent = githubConfigured ? 'Continue with GitHub' : 'GitHub sign-in needs setup';
+          }
         }
         if (googleSignInButton) {
           googleSignInButton.hidden = signedIn;
           googleSignInButton.disabled = !googleConfigured;
-          googleSignInButton.textContent = googleConfigured ? 'Continue with Google' : 'Google sign-in needs setup';
+          if (googleSignInLabel) {
+            googleSignInLabel.textContent = googleConfigured ? 'Continue with Google' : 'Google sign-in needs setup';
+          }
         }
       }
 
@@ -2993,7 +2994,7 @@
         const clientId = provider === 'google' ? window.GOOGLE_CLIENT_ID : window.GITHUB_CLIENT_ID;
         if (!clientId) {
           if (authError) {
-            authError.textContent = `Set up ${providerName} sign-in as described below.`;
+            authError.textContent = `${providerName} sign-in is not configured. Please contact the site administrator.`;
             authError.hidden = false;
           }
           return;
