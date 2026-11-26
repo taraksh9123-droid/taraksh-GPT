@@ -1926,7 +1926,7 @@
         padding: 8px;
       }
 
-      .github-signin {
+      .auth-provider-button {
         width: 100%;
         border: 1px solid var(--border) !important;
         background: var(--panel-soft) !important;
@@ -2565,16 +2565,17 @@
           <button id="closeSignInButton" class="auth-close" type="button" aria-label="Close sign-in">×</button>
           <div class="auth-mark" aria-hidden="true">✦</div>
           <h2 id="authTitle">Sign in to Taraksh GPT</h2>
-          <p id="authDescription" class="auth-intro">Save your chats to your GitHub account and continue them on another device.</p>
+          <p id="authDescription" class="auth-intro">Save your chats to your account and continue them on another device.</p>
           <div class="auth-provider">
-            <button id="githubSignInButton" class="github-signin" type="button">Continue with GitHub</button>
+            <button id="googleSignInButton" class="auth-provider-button" type="button">Continue with Google</button>
+            <button id="githubSignInButton" class="auth-provider-button" type="button">Continue with GitHub</button>
           </div>
           <p id="authError" class="auth-error" role="alert" hidden></p>
           <details id="authSetupDetails" class="auth-setup" open>
-            <summary>Set up GitHub sign-in and chat sync</summary>
+            <summary>Set up Google or GitHub sign-in and chat sync</summary>
             <ol>
-              <li>In <a href="https://github.com/settings/developers" target="_blank" rel="noopener noreferrer">GitHub Developer settings</a>, create an <strong>OAuth App</strong>. Set its homepage to <code>https://taraksh9123-droid.github.io</code> and its callback URL to your Worker URL plus <code>/auth/github/callback</code>.</li>
-              <li>Set <code>window.GITHUB_CLIENT_ID</code> in <code>config.js</code> and Worker variable <code>GITHUB_CLIENT_ID</code>. Save the generated <code>GITHUB_CLIENT_SECRET</code> only as a Cloudflare Worker secret; never put it in this website.</li>
+              <li>For GitHub, create an <strong>OAuth App</strong> in <a href="https://github.com/settings/developers" target="_blank" rel="noopener noreferrer">GitHub Developer settings</a> and set its callback URL to your Worker URL plus <code>/auth/github/callback</code>. For Google, create a <strong>Web application</strong> OAuth client in <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer">Google Cloud Credentials</a> and add your Worker URL plus <code>/auth/google/callback</code> as an authorized redirect URI.</li>
+              <li>Set the provider's public client ID in <code>config.js</code> and its matching <code>*_CLIENT_ID</code> Worker variable. Store each client secret only as a Cloudflare Worker secret (<code>GITHUB_CLIENT_SECRET</code> or <code>GOOGLE_CLIENT_SECRET</code>); never put a secret in this website.</li>
               <li>In <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare</a>, create a D1 database, run the SQL in <code>schema.sql</code>, and bind it to the Worker as <code>CHAT_HISTORY</code>.</li>
               <li>Set Worker variable <code>ALLOWED_ORIGIN</code> to <code>https://taraksh9123-droid.github.io</code>, then deploy <code>worker.js</code>.</li>
             </ol>
@@ -2650,6 +2651,7 @@
       const closeSignInButton = document.getElementById('closeSignInButton');
       const authGuestButton = document.getElementById('authGuestButton');
       const githubSignInButton = document.getElementById('githubSignInButton');
+      const googleSignInButton = document.getElementById('googleSignInButton');
       const authSetupDetails = document.getElementById('authSetupDetails');
       const authError = document.getElementById('authError');
       const fileInput = document.getElementById('fileInput');
@@ -2804,7 +2806,7 @@
           session &&
           typeof session.token === 'string' &&
           /^[a-f0-9]{64}$/i.test(session.token) &&
-          session.user?.provider === 'github'
+          ['github', 'google'].includes(session.user?.provider)
         );
       }
 
@@ -2829,7 +2831,7 @@
 
       function persistAccountSession(session) {
         if (!isValidAccountSession(session)) {
-          throw new Error('The GitHub sign-in session is invalid.');
+          throw new Error('The sign-in session is invalid.');
         }
 
         const value = encodeURIComponent(JSON.stringify(session));
@@ -2852,26 +2854,29 @@
       function readStoredAccountSession() {
         try {
           const callbackParams = new URLSearchParams(window.location.hash.slice(1));
-          const githubSession = callbackParams.get('github_session');
-          const githubError = callbackParams.get('github_error');
+          const callbackProvider = ['github', 'google'].find((provider) =>
+            callbackParams.has(`${provider}_session`) || callbackParams.has(`${provider}_error`)
+          );
+          const providerSession = callbackProvider ? callbackParams.get(`${callbackProvider}_session`) : null;
+          const providerError = callbackProvider ? callbackParams.get(`${callbackProvider}_error`) : null;
           let callbackSession = null;
-          if (githubSession) {
+          if (providerSession) {
             try {
-              const returnedSession = JSON.parse(githubSession);
+              const returnedSession = JSON.parse(providerSession);
               if (!isValidAccountSession(returnedSession)) {
-                pendingAuthError = 'GitHub sign-in returned an invalid session. Please try again.';
+                pendingAuthError = 'Sign-in returned an invalid session. Please try again.';
               } else {
                 persistAccountSession(returnedSession);
                 callbackSession = returnedSession;
               }
             } catch (error) {
-              console.error('Could not save the GitHub sign-in session.', error);
-              pendingAuthError = error.message || 'GitHub sign-in could not be saved. Please try again.';
+              console.error('Could not save the sign-in session.', error);
+              pendingAuthError = error.message || 'Sign-in could not be saved. Please try again.';
             }
-          } else if (githubError) {
-            pendingAuthError = githubError;
+          } else if (providerError) {
+            pendingAuthError = providerError;
           }
-          if (githubSession || githubError) {
+          if (callbackProvider) {
             history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
           }
 
@@ -2953,6 +2958,7 @@
       function updateAccountUi() {
         const signedIn = Boolean(accountSession?.token && accountSession.user);
         const githubConfigured = typeof window.GITHUB_CLIENT_ID === 'string' && window.GITHUB_CLIENT_ID.trim();
+        const googleConfigured = typeof window.GOOGLE_CLIENT_ID === 'string' && window.GOOGLE_CLIENT_ID.trim();
         if (accountStatus) {
           accountStatus.textContent = signedIn
             ? accountSession.user.email || accountSession.user.name || 'Signed in'
@@ -2962,15 +2968,21 @@
         if (signInButton) signInButton.hidden = signedIn;
         if (guestModeButton) guestModeButton.hidden = signedIn || guestModeSelected;
         if (signOutButton) signOutButton.hidden = !signedIn;
-        if (authSetupDetails) authSetupDetails.open = !githubConfigured;
+        if (authSetupDetails) authSetupDetails.open = !githubConfigured && !googleConfigured;
         if (githubSignInButton) {
           githubSignInButton.hidden = signedIn;
           githubSignInButton.disabled = !githubConfigured;
           githubSignInButton.textContent = githubConfigured ? 'Continue with GitHub' : 'GitHub sign-in needs setup';
         }
+        if (googleSignInButton) {
+          googleSignInButton.hidden = signedIn;
+          googleSignInButton.disabled = !googleConfigured;
+          googleSignInButton.textContent = googleConfigured ? 'Continue with Google' : 'Google sign-in needs setup';
+        }
       }
 
-      function startGitHubSignIn() {
+      function startProviderSignIn(provider) {
+        const providerName = provider === 'google' ? 'Google' : 'GitHub';
         if (isReplying) {
           if (authError) {
             authError.textContent = 'Finish the current reply before signing in.';
@@ -2978,9 +2990,10 @@
           }
           return;
         }
-        if (!window.GITHUB_CLIENT_ID) {
+        const clientId = provider === 'google' ? window.GOOGLE_CLIENT_ID : window.GITHUB_CLIENT_ID;
+        if (!clientId) {
           if (authError) {
-            authError.textContent = 'Create a GitHub OAuth App and set GITHUB_CLIENT_ID as described below.';
+            authError.textContent = `Set up ${providerName} sign-in as described below.`;
             authError.hidden = false;
           }
           return;
@@ -2994,7 +3007,7 @@
           return;
         }
         const returnTo = `${window.location.origin}${window.location.pathname}`;
-        window.location.assign(`${proxyUrl}/auth/github?return_to=${encodeURIComponent(returnTo)}`);
+        window.location.assign(`${proxyUrl}/auth/${provider}?return_to=${encodeURIComponent(returnTo)}`);
       }
 
       async function loadAccountChats() {
@@ -4733,7 +4746,8 @@
       }
 
       if (signInButton) signInButton.addEventListener('click', openSignInModal);
-      if (githubSignInButton) githubSignInButton.addEventListener('click', startGitHubSignIn);
+      if (githubSignInButton) githubSignInButton.addEventListener('click', () => startProviderSignIn('github'));
+      if (googleSignInButton) googleSignInButton.addEventListener('click', () => startProviderSignIn('google'));
       if (closeSignInButton) closeSignInButton.addEventListener('click', closeSignInModal);
       if (signInModal) {
         signInModal.addEventListener('click', (event) => {

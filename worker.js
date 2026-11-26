@@ -104,7 +104,7 @@ function makeRedirect(url, cookies = []) {
   return new Response(null, { status: 302, headers });
 }
 
-function makeGitHubAppRedirect(origin, path, valueName, value) {
+function makeProviderAppRedirect(origin, path, valueName, value) {
   const target = new URL(path, origin);
   target.hash = new URLSearchParams({ [valueName]: value }).toString();
   return target.toString();
@@ -122,7 +122,7 @@ async function startGitHubSignIn(env, url, allowedOrigins) {
     return errorResponse('The return URL is not allowed.', 403, {});
   }
   const returnPath = returnTo.pathname || '/';
-  const appRedirect = (name, value) => makeRedirect(makeGitHubAppRedirect(returnTo.origin, returnPath, name, value));
+  const appRedirect = (name, value) => makeRedirect(makeProviderAppRedirect(returnTo.origin, returnPath, name, value));
 
   if (!env.CHAT_HISTORY) return appRedirect('github_error', 'Cloudflare D1 binding CHAT_HISTORY is not configured.');
   if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
@@ -157,7 +157,7 @@ async function handleGitHubCallback(request, env, url) {
   if (!origin) return new Response('Sign-in could not be completed. Return to the app and try again.', { status: 400, headers: { 'Set-Cookie': clearCookies[0] } });
 
   const redirectToApp = (key, value) => makeRedirect(
-    makeGitHubAppRedirect(origin, returnPath, key, value),
+    makeProviderAppRedirect(origin, returnPath, key, value),
     clearCookies
   );
   const state = url.searchParams.get('state') || '';
@@ -226,6 +226,111 @@ async function handleGitHubCallback(request, env, url) {
   } catch (error) {
     console.error('GitHub sign-in failed.', error);
     return redirectToApp('github_error', 'GitHub sign-in failed. Check your OAuth App and Worker settings.');
+  }
+}
+
+async function startGoogleSignIn(env, url, allowedOrigins) {
+  const returnToValue = url.searchParams.get('return_to') || '';
+  let returnTo;
+  try {
+    returnTo = new URL(returnToValue);
+  } catch {
+    return errorResponse('A valid return URL is required.', 400, {});
+  }
+  if (!allowedOrigins.includes(returnTo.origin) || returnTo.username || returnTo.password) {
+    return errorResponse('The return URL is not allowed.', 403, {});
+  }
+  const returnPath = returnTo.pathname || '/';
+  const appRedirect = (name, value) => makeRedirect(makeProviderAppRedirect(returnTo.origin, returnPath, name, value));
+
+  if (!env.CHAT_HISTORY) return appRedirect('google_error', 'Cloudflare D1 binding CHAT_HISTORY is not configured.');
+  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+    return appRedirect('google_error', 'Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET on the Cloudflare Worker first.');
+  }
+
+  const state = createSessionToken();
+  const callbackUrl = `${url.origin}/auth/google/callback`;
+  const authorizeUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  authorizeUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID);
+  authorizeUrl.searchParams.set('redirect_uri', callbackUrl);
+  authorizeUrl.searchParams.set('response_type', 'code');
+  authorizeUrl.searchParams.set('scope', 'openid email profile');
+  authorizeUrl.searchParams.set('state', state);
+
+  const cookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=600';
+  return makeRedirect(authorizeUrl.toString(), [
+    `google_oauth_state=${state}; ${cookieOptions}`,
+    `google_return_origin=${encodeURIComponent(returnTo.origin)}; ${cookieOptions}`,
+    `google_return_path=${encodeURIComponent(returnPath)}; ${cookieOptions}`
+  ]);
+}
+
+async function handleGoogleCallback(request, env, url) {
+  const origin = getCookie(request, 'google_return_origin');
+  const path = getCookie(request, 'google_return_path');
+  const returnPath = path.startsWith('/') && !path.startsWith('//') ? path : '/';
+  const clearCookies = [
+    'google_oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=0',
+    'google_return_origin=; HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=0',
+    'google_return_path=; HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=0'
+  ];
+  if (!origin) return new Response('Sign-in could not be completed. Return to the app and try again.', { status: 400, headers: { 'Set-Cookie': clearCookies[0] } });
+
+  const redirectToApp = (key, value) => makeRedirect(
+    makeProviderAppRedirect(origin, returnPath, key, value),
+    clearCookies
+  );
+  const state = url.searchParams.get('state') || '';
+  if (!state || state !== getCookie(request, 'google_oauth_state')) {
+    return redirectToApp('google_error', 'Google sign-in could not be verified. Please try again.');
+  }
+  if (url.searchParams.has('error') || !url.searchParams.get('code')) {
+    return redirectToApp('google_error', 'Google sign-in was cancelled or denied.');
+  }
+  if (!env.CHAT_HISTORY || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+    return redirectToApp('google_error', 'Cloudflare sign-in or chat-history setup is incomplete.');
+  }
+
+  try {
+    const callbackUrl = `${url.origin}/auth/google/callback`;
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: env.GOOGLE_CLIENT_ID,
+        client_secret: env.GOOGLE_CLIENT_SECRET,
+        code: url.searchParams.get('code'),
+        grant_type: 'authorization_code',
+        redirect_uri: callbackUrl
+      })
+    });
+    if (!tokenResponse.ok) return redirectToApp('google_error', 'Google could not complete sign-in. Check the OAuth client callback URL.');
+    const tokenData = await tokenResponse.json();
+    if (typeof tokenData.access_token !== 'string' || !tokenData.access_token) {
+      return redirectToApp('google_error', 'Google did not return an access token.');
+    }
+
+    const profileResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` }
+    });
+    if (!profileResponse.ok) return redirectToApp('google_error', 'Google could not load your profile. Please try again.');
+    const profile = await profileResponse.json();
+    if (typeof profile.sub !== 'string' || !profile.sub || profile.email_verified !== true) {
+      return redirectToApp('google_error', 'Google did not return a verified account profile.');
+    }
+
+    const session = await createUserSession(env.CHAT_HISTORY, {
+      id: `google:${profile.sub}`,
+      provider: 'google',
+      providerUserId: profile.sub,
+      email: typeof profile.email === 'string' ? profile.email : '',
+      name: typeof profile.name === 'string' && profile.name ? profile.name : profile.email || 'Google user',
+      picture: typeof profile.picture === 'string' ? profile.picture : ''
+    });
+    return redirectToApp('google_session', JSON.stringify(session));
+  } catch (error) {
+    console.error('Google sign-in failed.', error);
+    return redirectToApp('google_error', 'Google sign-in failed. Check your OAuth client and Worker settings.');
   }
 }
 
@@ -420,15 +525,15 @@ export default {
       .map((value) => value.trim().replace(/\/$/, ''))
       .filter(Boolean);
     const isAccountRoute = url.pathname.startsWith('/auth/') || url.pathname.startsWith('/api/');
-    const isGitHubNavigation = request.method === 'GET' &&
-      ['/auth/github', '/auth/github/callback'].includes(url.pathname);
+    const isOAuthNavigation = request.method === 'GET' &&
+      ['/auth/github', '/auth/github/callback', '/auth/google', '/auth/google/callback'].includes(url.pathname);
     if (isAccountRoute && !allowedOrigins.length) {
       return new Response('ALLOWED_ORIGIN must be configured for account routes.', { status: 503 });
     }
     if (allowedOrigins.length && origin && !allowedOrigins.includes(origin)) {
       return new Response('Forbidden', { status: 403 });
     }
-    if (isAccountRoute && !origin && !isGitHubNavigation) return new Response('Forbidden', { status: 403 });
+    if (isAccountRoute && !origin && !isOAuthNavigation) return new Response('Forbidden', { status: 403 });
 
     const corsHeaders = {
       'Access-Control-Allow-Origin': origin || allowedOrigins[0] || '*',
@@ -444,6 +549,12 @@ export default {
       }
       if (url.pathname === '/auth/github/callback' && request.method === 'GET') {
         return await handleGitHubCallback(request, env, url);
+      }
+      if (url.pathname === '/auth/google' && request.method === 'GET') {
+        return await startGoogleSignIn(env, url, allowedOrigins);
+      }
+      if (url.pathname === '/auth/google/callback' && request.method === 'GET') {
+        return await handleGoogleCallback(request, env, url);
       }
       if (url.pathname === '/auth/logout' && request.method === 'POST') {
         return await handleLogout(request, env, corsHeaders);
