@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Privacy Policy for Taraksh GPT, including Google sign-in, chat storage, and connected service providers." />
+    <meta name="description" content="Privacy Policy for Taraksh GPT, including Clerk sign-in, chat storage, and connected service providers." />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://taraksh9123-droid.github.io/taraksh-GPT/privacy.html" />
     <title>Privacy Policy | Taraksh GPT</title>
@@ -64,19 +64,15 @@
 
       <h2>Information collected and how it is used</h2>
       <p>
-        You can use the app as a guest or sign in with Google or GitHub. If you sign in, the
-        provider returns an account identifier and the profile details it makes available
-        (typically your name, email address, and profile picture). Google sign-in requests only
-        the OpenID Connect <code>openid</code>, <code>email</code>, and <code>profile</code>
-        scopes. The app uses these details to authenticate you, identify your account, show your
-        account information, and associate your saved chats with your account. Google account data
-        is not sold, used for advertising, or used to train AI or machine-learning models.
+        You can use the app as a guest or sign in with Clerk. Clerk provides an account identifier
+        and profile details made available by your account settings, such as your name, email
+        address, and profile picture. The app uses these details to identify your account, show
+        account information, and associate saved chats with your account.
       </p>
       <p>
-        For signed-in accounts, the app stores the provider identifier and available profile
-        details, app sign-in session records, and the chats you choose to save. Chat records
-        include their titles, messages, timestamps, and any generated image attached to a chat.
-        The app does not ask for your Google password.
+        For signed-in accounts, the app stores the Clerk account identifier and the chats you
+        choose to save. Chat records include their titles, messages, timestamps, and any generated
+        image attached to a chat. Clerk handles authentication credentials and sessions.
       </p>
 
       <h2>Chats, prompts, and connected services</h2>
@@ -112,22 +108,21 @@
       </ul>
       <p>
         These services receive the information needed for the feature you request and process it
-        under their own privacy policies. Google profile data is used only for sign-in and the
-        account features described here. It is not sold, used for advertising or AI-model training,
-        or sent to Groq or image-generation services by the app.
+        under their own privacy policies. Clerk profile details are used only for sign-in and the
+        account features described here. They are not sold, used for advertising or AI-model
+        training, or sent to Groq or image-generation services by the app.
       </p>
 
       <h2>Storage, security, and retention</h2>
       <p>
-        The browser stores the app sign-in session in a Secure, SameSite cookie for up to 300 days.
-        The Worker stores a SHA-256 hash of the app session token in the database rather than the
-        token itself. Temporary OAuth flow cookies are used to complete and validate sign-in. The
-        app uses HTTPS for hosted sign-in and service requests.
+        Clerk manages the browser sign-in session and token renewal. The app sends Clerk session
+        tokens to its Cloudflare Worker over HTTPS. The Worker verifies token signatures against
+        Clerk's public signing keys and does not store those tokens in the app database.
       </p>
       <p>
         Guest conversations remain in your browser until you delete them or clear the site's
-        storage. Signed-in chats remain in the account until you delete them. App session records
-        expire and are revoked when you sign out. To request deletion of account profile data,
+        storage. Signed-in chats remain in the account until you delete them. Signing out ends the
+        Clerk session. To request deletion of account profile data,
         contact us using the details below. We do not set an app analytics or advertising cookie.
       </p>
 
@@ -143,7 +138,7 @@
       <h2>Your choices and contact</h2>
       <p>
         You can delete chats in the app, clear guest chats and preferences by clearing this site's
-        browser storage, or sign out to revoke the app session. For a request to delete account
+        browser storage, or sign out of Clerk. For a request to delete account
         profile data or for privacy questions, contact
         <a href="mailto:Taraksh9123@gmail.com">Taraksh9123@gmail.com</a>.
         Include the email associated with the account if relevant, but never send your password,

@@ -1,8 +1,8 @@
-const SESSION_LIFETIME_SECONDS = 60 * 60 * 24 * 300;
-const SESSION_REFRESH_THRESHOLD_SECONDS = 60 * 60 * 24 * 30;
 const MAX_CHAT_BYTES = 750000;
 const MAX_SAVED_CHATS = 1000;
 const MAX_IMAGE_DATA_URL_LENGTH = 160000;
+const CLERK_JWKS_CACHE_MS = 60 * 60 * 1000;
+const clerkJwksCache = new Map();
 
 function jsonResponse(data, status, corsHeaders) {
   return Response.json(data, { status, headers: corsHeaders });
@@ -12,35 +12,119 @@ function errorResponse(message, status, corsHeaders) {
   return jsonResponse({ error: { message } }, status, corsHeaders);
 }
 
-async function sha256(value) {
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
-function createSessionToken() {
-  const bytes = crypto.getRandomValues(new Uint8Array(32));
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
 function getBearerToken(request) {
   const authorization = request.headers.get('Authorization') || '';
-  const match = authorization.match(/^Bearer ([a-f0-9]{64})$/i);
+  const match = authorization.match(/^Bearer ([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)$/);
   return match ? match[1] : '';
 }
 
-async function getSession(request, db) {
+function decodeJwtSegment(segment) {
+  const base64 = segment.replace(/-/g, '+').replace(/_/g, '/');
+  const bytes = Uint8Array.from(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')), (char) => char.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+async function getClerkJwks(issuer, refresh = false) {
+  const cached = clerkJwksCache.get(issuer);
+  if (!refresh && cached && cached.expiresAt > Date.now()) return cached.keys;
+
+  const response = await fetch(`${issuer}/.well-known/jwks.json`);
+  if (!response.ok) throw new Error('Clerk public signing keys could not be loaded.');
+  const jwks = await response.json();
+  if (!Array.isArray(jwks.keys)) throw new Error('Clerk returned invalid public signing keys.');
+  clerkJwksCache.set(issuer, { keys: jwks.keys, expiresAt: Date.now() + CLERK_JWKS_CACHE_MS });
+  return jwks.keys;
+}
+
+async function getClerkSession(request, env, allowedOrigins) {
   const token = getBearerToken(request);
   if (!token) return null;
-  const tokenHash = await sha256(token);
-  const now = Math.floor(Date.now() / 1000);
-  const session = await db.prepare(
-    'SELECT user_id, expires_at FROM auth_sessions WHERE session_hash = ? AND expires_at > ?'
-  ).bind(tokenHash, now).first();
-  if (session && session.expires_at - now < SESSION_LIFETIME_SECONDS - SESSION_REFRESH_THRESHOLD_SECONDS) {
-    await db.prepare('UPDATE auth_sessions SET expires_at = ? WHERE session_hash = ?')
-      .bind(now + SESSION_LIFETIME_SECONDS, tokenHash).run();
+
+  const issuer = typeof env.CLERK_ISSUER === 'string' ? env.CLERK_ISSUER.replace(/\/$/, '') : '';
+  let issuerUrl;
+  try {
+    issuerUrl = new URL(issuer);
+  } catch {
+    throw new Error('Set CLERK_ISSUER to the HTTPS issuer URL from your Clerk instance.');
   }
-  return session || null;
+  if (issuerUrl.protocol !== 'https:' || issuerUrl.pathname !== '/' || issuerUrl.search || issuerUrl.hash) {
+    throw new Error('CLERK_ISSUER must be an HTTPS origin without a path.');
+  }
+
+  const [encodedHeader, encodedClaims, encodedSignature] = token.split('.');
+  let header;
+  let claims;
+  try {
+    header = decodeJwtSegment(encodedHeader);
+    claims = decodeJwtSegment(encodedClaims);
+  } catch {
+    return null;
+  }
+  if (!header || typeof header !== 'object' || Array.isArray(header) ||
+      !claims || typeof claims !== 'object' || Array.isArray(claims) ||
+      header.alg !== 'RS256' || typeof header.kid !== 'string' ||
+      claims.iss !== issuer || typeof claims.sub !== 'string' ||
+      typeof claims.exp !== 'number' || claims.exp <= Math.floor(Date.now() / 1000) ||
+      (typeof claims.nbf === 'number' && claims.nbf > Math.floor(Date.now() / 1000))) {
+    return null;
+  }
+  const authorizedParty = claims.azp;
+  const requestOrigin = request.headers.get('Origin');
+  if (authorizedParty !== undefined &&
+      (typeof authorizedParty !== 'string' || !allowedOrigins.includes(authorizedParty) ||
+       (requestOrigin && authorizedParty !== requestOrigin))) {
+    return null;
+  }
+
+  let keys = await getClerkJwks(issuer);
+  let jwk = keys.find((key) => key && key.kid === header.kid && key.kty === 'RSA');
+  if (!jwk) {
+    keys = await getClerkJwks(issuer, true);
+    jwk = keys.find((key) => key && key.kid === header.kid && key.kty === 'RSA');
+  }
+  if (!jwk) return null;
+
+  let isValid;
+  try {
+    const publicKey = await crypto.subtle.importKey(
+      'jwk',
+      jwk,
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false,
+      ['verify']
+    );
+    const signature = Uint8Array.from(
+      atob(encodedSignature.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(encodedSignature.length / 4) * 4, '=')),
+      (char) => char.charCodeAt(0)
+    );
+    isValid = await crypto.subtle.verify(
+      'RSASSA-PKCS1-v1_5',
+      publicKey,
+      signature,
+      new TextEncoder().encode(`${encodedHeader}.${encodedClaims}`)
+    );
+  } catch {
+    return null;
+  }
+  if (!isValid) return null;
+
+  const userId = `clerk:${claims.sub}`;
+  const now = new Date().toISOString();
+  await env.CHAT_HISTORY.prepare(
+    'INSERT INTO users (id, provider, provider_user_id, email, name, picture, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ' +
+    'ON CONFLICT(id) DO UPDATE SET email = excluded.email, name = excluded.name, picture = excluded.picture, updated_at = excluded.updated_at'
+  ).bind(
+    userId,
+    'clerk',
+    claims.sub,
+    null,
+    'Clerk user',
+    '',
+    now,
+    now
+  ).run();
+
+  return { user_id: userId };
 }
 
 async function readJson(request) {
@@ -49,299 +133,6 @@ async function readJson(request) {
   } catch {
     return null;
   }
-}
-
-async function createUserSession(db, identity) {
-  const now = new Date().toISOString();
-  await db.prepare(
-    'INSERT INTO users (id, provider, provider_user_id, email, name, picture, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ' +
-    'ON CONFLICT(id) DO UPDATE SET email = excluded.email, name = excluded.name, picture = excluded.picture, updated_at = excluded.updated_at'
-  ).bind(
-    identity.id,
-    identity.provider,
-    identity.providerUserId,
-    identity.email || null,
-    identity.name,
-    identity.picture || '',
-    now,
-    now
-  ).run();
-
-  const token = createSessionToken();
-  const tokenHash = await sha256(token);
-  const sessionExpiry = Math.floor(Date.now() / 1000) + SESSION_LIFETIME_SECONDS;
-  await db.prepare('DELETE FROM auth_sessions WHERE expires_at <= ?').bind(Math.floor(Date.now() / 1000)).run();
-  await db.prepare(
-    'INSERT INTO auth_sessions (session_hash, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)'
-  ).bind(tokenHash, identity.id, sessionExpiry, now).run();
-
-  return {
-    token,
-    user: {
-      id: identity.id,
-      provider: identity.provider,
-      email: identity.email || '',
-      name: identity.name,
-      picture: identity.picture || ''
-    }
-  };
-}
-
-function getCookie(request, name) {
-  const cookies = request.headers.get('Cookie') || '';
-  const cookie = cookies.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${name}=`));
-  if (!cookie) return '';
-  try {
-    return decodeURIComponent(cookie.slice(name.length + 1));
-  } catch {
-    return '';
-  }
-}
-
-function makeRedirect(url, cookies = []) {
-  const headers = new Headers({ Location: url });
-  cookies.forEach((cookie) => headers.append('Set-Cookie', cookie));
-  return new Response(null, { status: 302, headers });
-}
-
-function makeProviderAppRedirect(origin, path, valueName, value) {
-  const target = new URL(path, origin);
-  target.hash = new URLSearchParams({ [valueName]: value }).toString();
-  return target.toString();
-}
-
-async function startGitHubSignIn(env, url, allowedOrigins) {
-  const returnToValue = url.searchParams.get('return_to') || '';
-  let returnTo;
-  try {
-    returnTo = new URL(returnToValue);
-  } catch {
-    return errorResponse('A valid return URL is required.', 400, {});
-  }
-  if (!allowedOrigins.includes(returnTo.origin) || returnTo.username || returnTo.password) {
-    return errorResponse('The return URL is not allowed.', 403, {});
-  }
-  const returnPath = returnTo.pathname || '/';
-  const appRedirect = (name, value) => makeRedirect(makeProviderAppRedirect(returnTo.origin, returnPath, name, value));
-
-  if (!env.CHAT_HISTORY) return appRedirect('github_error', 'Cloudflare D1 binding CHAT_HISTORY is not configured.');
-  if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
-    return appRedirect('github_error', 'Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET on the Cloudflare Worker first.');
-  }
-
-  const state = createSessionToken();
-  const callbackUrl = `${url.origin}/auth/github/callback`;
-  const authorizeUrl = new URL('https://github.com/login/oauth/authorize');
-  authorizeUrl.searchParams.set('client_id', env.GITHUB_CLIENT_ID);
-  authorizeUrl.searchParams.set('redirect_uri', callbackUrl);
-  authorizeUrl.searchParams.set('scope', 'read:user user:email');
-  authorizeUrl.searchParams.set('state', state);
-
-  const cookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/auth/github/callback; Max-Age=600';
-  return makeRedirect(authorizeUrl.toString(), [
-    `github_oauth_state=${state}; ${cookieOptions}`,
-    `github_return_origin=${encodeURIComponent(returnTo.origin)}; ${cookieOptions}`,
-    `github_return_path=${encodeURIComponent(returnPath)}; ${cookieOptions}`
-  ]);
-}
-
-async function handleGitHubCallback(request, env, url) {
-  const origin = getCookie(request, 'github_return_origin');
-  const path = getCookie(request, 'github_return_path');
-  const returnPath = path.startsWith('/') && !path.startsWith('//') ? path : '/';
-  const clearCookies = [
-    'github_oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/auth/github/callback; Max-Age=0',
-    'github_return_origin=; HttpOnly; Secure; SameSite=Lax; Path=/auth/github/callback; Max-Age=0',
-    'github_return_path=; HttpOnly; Secure; SameSite=Lax; Path=/auth/github/callback; Max-Age=0'
-  ];
-  if (!origin) return new Response('Sign-in could not be completed. Return to the app and try again.', { status: 400, headers: { 'Set-Cookie': clearCookies[0] } });
-
-  const redirectToApp = (key, value) => makeRedirect(
-    makeProviderAppRedirect(origin, returnPath, key, value),
-    clearCookies
-  );
-  const state = url.searchParams.get('state') || '';
-  if (!state || state !== getCookie(request, 'github_oauth_state')) {
-    return redirectToApp('github_error', 'GitHub sign-in could not be verified. Please try again.');
-  }
-  if (url.searchParams.has('error') || !url.searchParams.get('code')) {
-    return redirectToApp('github_error', 'GitHub sign-in was cancelled or denied.');
-  }
-  if (!env.CHAT_HISTORY || !env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
-    return redirectToApp('github_error', 'Cloudflare sign-in or chat-history setup is incomplete.');
-  }
-
-  try {
-    const callbackUrl = `${url.origin}/auth/github/callback`;
-    const tokenBody = new URLSearchParams({
-      client_id: env.GITHUB_CLIENT_ID,
-      client_secret: env.GITHUB_CLIENT_SECRET,
-      code: url.searchParams.get('code'),
-      redirect_uri: callbackUrl,
-      state
-    });
-    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: tokenBody
-    });
-    if (!tokenResponse.ok) return redirectToApp('github_error', 'GitHub could not complete sign-in. Check the OAuth App callback URL.');
-    const tokenData = await tokenResponse.json();
-    if (!tokenData.access_token) return redirectToApp('github_error', 'GitHub did not return an access token.');
-
-    const githubHeaders = {
-      Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${tokenData.access_token}`,
-      'User-Agent': 'Taraksh-GPT'
-    };
-    const profileResponse = await fetch('https://api.github.com/user', { headers: githubHeaders });
-    if (!profileResponse.ok) return redirectToApp('github_error', 'GitHub could not load your profile. Please try again.');
-    const profile = await profileResponse.json();
-    if (!Number.isSafeInteger(profile.id) || typeof profile.login !== 'string') {
-      return redirectToApp('github_error', 'GitHub returned an invalid account profile.');
-    }
-
-    let email = typeof profile.email === 'string' ? profile.email : '';
-    if (!email) {
-      const emailsResponse = await fetch('https://api.github.com/user/emails', { headers: githubHeaders });
-      if (emailsResponse.ok) {
-        const emails = await emailsResponse.json();
-        email = emails.find((item) => item.primary && item.verified)?.email || '';
-      }
-    }
-
-    const providerUserId = String(profile.id);
-    const session = await createUserSession(env.CHAT_HISTORY, {
-      id: `github:${providerUserId}`,
-      provider: 'github',
-      providerUserId,
-      email,
-      name: profile.name || profile.login,
-      picture: profile.avatar_url || ''
-    });
-    return redirectToApp('github_session', JSON.stringify(session));
-  } catch (error) {
-    console.error('GitHub sign-in failed.', error);
-    return redirectToApp('github_error', 'GitHub sign-in failed. Check your OAuth App and Worker settings.');
-  }
-}
-
-async function startGoogleSignIn(env, url, allowedOrigins) {
-  const returnToValue = url.searchParams.get('return_to') || '';
-  let returnTo;
-  try {
-    returnTo = new URL(returnToValue);
-  } catch {
-    return errorResponse('A valid return URL is required.', 400, {});
-  }
-  if (!allowedOrigins.includes(returnTo.origin) || returnTo.username || returnTo.password) {
-    return errorResponse('The return URL is not allowed.', 403, {});
-  }
-  const returnPath = returnTo.pathname || '/';
-  const appRedirect = (name, value) => makeRedirect(makeProviderAppRedirect(returnTo.origin, returnPath, name, value));
-
-  if (!env.CHAT_HISTORY) return appRedirect('google_error', 'Cloudflare D1 binding CHAT_HISTORY is not configured.');
-  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
-    return appRedirect('google_error', 'Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET on the Cloudflare Worker first.');
-  }
-
-  const state = createSessionToken();
-  const callbackUrl = `${url.origin}/auth/google/callback`;
-  const authorizeUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-  authorizeUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID);
-  authorizeUrl.searchParams.set('redirect_uri', callbackUrl);
-  authorizeUrl.searchParams.set('response_type', 'code');
-  authorizeUrl.searchParams.set('scope', 'openid email profile');
-  authorizeUrl.searchParams.set('state', state);
-
-  const cookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=600';
-  return makeRedirect(authorizeUrl.toString(), [
-    `google_oauth_state=${state}; ${cookieOptions}`,
-    `google_return_origin=${encodeURIComponent(returnTo.origin)}; ${cookieOptions}`,
-    `google_return_path=${encodeURIComponent(returnPath)}; ${cookieOptions}`
-  ]);
-}
-
-async function handleGoogleCallback(request, env, url) {
-  const origin = getCookie(request, 'google_return_origin');
-  const path = getCookie(request, 'google_return_path');
-  const returnPath = path.startsWith('/') && !path.startsWith('//') ? path : '/';
-  const clearCookies = [
-    'google_oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=0',
-    'google_return_origin=; HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=0',
-    'google_return_path=; HttpOnly; Secure; SameSite=Lax; Path=/auth/google/callback; Max-Age=0'
-  ];
-  if (!origin) return new Response('Sign-in could not be completed. Return to the app and try again.', { status: 400, headers: { 'Set-Cookie': clearCookies[0] } });
-
-  const redirectToApp = (key, value) => makeRedirect(
-    makeProviderAppRedirect(origin, returnPath, key, value),
-    clearCookies
-  );
-  const state = url.searchParams.get('state') || '';
-  if (!state || state !== getCookie(request, 'google_oauth_state')) {
-    return redirectToApp('google_error', 'Google sign-in could not be verified. Please try again.');
-  }
-  if (url.searchParams.has('error') || !url.searchParams.get('code')) {
-    return redirectToApp('google_error', 'Google sign-in was cancelled or denied.');
-  }
-  if (!env.CHAT_HISTORY || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
-    return redirectToApp('google_error', 'Cloudflare sign-in or chat-history setup is incomplete.');
-  }
-
-  try {
-    const callbackUrl = `${url.origin}/auth/google/callback`;
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: env.GOOGLE_CLIENT_ID,
-        client_secret: env.GOOGLE_CLIENT_SECRET,
-        code: url.searchParams.get('code'),
-        grant_type: 'authorization_code',
-        redirect_uri: callbackUrl
-      })
-    });
-    if (!tokenResponse.ok) return redirectToApp('google_error', 'Google could not complete sign-in. Check the OAuth client callback URL.');
-    const tokenData = await tokenResponse.json();
-    if (typeof tokenData.access_token !== 'string' || !tokenData.access_token) {
-      return redirectToApp('google_error', 'Google did not return an access token.');
-    }
-
-    const profileResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
-      headers: { Authorization: `Bearer ${tokenData.access_token}` }
-    });
-    if (!profileResponse.ok) return redirectToApp('google_error', 'Google could not load your profile. Please try again.');
-    const profile = await profileResponse.json();
-    if (typeof profile.sub !== 'string' || !profile.sub || profile.email_verified !== true) {
-      return redirectToApp('google_error', 'Google did not return a verified account profile.');
-    }
-
-    const session = await createUserSession(env.CHAT_HISTORY, {
-      id: `google:${profile.sub}`,
-      provider: 'google',
-      providerUserId: profile.sub,
-      email: typeof profile.email === 'string' ? profile.email : '',
-      name: typeof profile.name === 'string' && profile.name ? profile.name : profile.email || 'Google user',
-      picture: typeof profile.picture === 'string' ? profile.picture : ''
-    });
-    return redirectToApp('google_session', JSON.stringify(session));
-  } catch (error) {
-    console.error('Google sign-in failed.', error);
-    return redirectToApp('google_error', 'Google sign-in failed. Check your OAuth client and Worker settings.');
-  }
-}
-
-async function handleLogout(request, env, corsHeaders) {
-  if (!env.CHAT_HISTORY) return errorResponse('Cloudflare D1 binding CHAT_HISTORY is not configured.', 503, corsHeaders);
-  const token = getBearerToken(request);
-  if (token) {
-    await env.CHAT_HISTORY.prepare('DELETE FROM auth_sessions WHERE session_hash = ?')
-      .bind(await sha256(token)).run();
-  }
-  return jsonResponse({ ok: true }, 200, corsHeaders);
 }
 
 function validateChat(body, pathId) {
@@ -373,10 +164,11 @@ function validateChat(body, pathId) {
   return '';
 }
 
-async function handleChats(request, env, url, corsHeaders) {
+async function handleChats(request, env, url, corsHeaders, allowedOrigins) {
   if (!env.CHAT_HISTORY) return errorResponse('Cloudflare D1 binding CHAT_HISTORY is not configured.', 503, corsHeaders);
-  const session = await getSession(request, env.CHAT_HISTORY);
-  if (!session) return errorResponse('Your sign-in session has expired. Sign in again to sync history.', 401, corsHeaders);
+  if (!env.CLERK_ISSUER) return errorResponse('Set CLERK_ISSUER on the Cloudflare Worker to enable Clerk authentication.', 503, corsHeaders);
+  const session = await getClerkSession(request, env, allowedOrigins);
+  if (!session) return errorResponse('Your Clerk session is invalid or expired. Sign in again to sync history.', 401, corsHeaders);
 
   const path = url.pathname.replace(/\/+$/, '') || '/';
   if (path === '/api/chats' && request.method === 'GET') {
@@ -524,16 +316,14 @@ export default {
       .split(',')
       .map((value) => value.trim().replace(/\/$/, ''))
       .filter(Boolean);
-    const isAccountRoute = url.pathname.startsWith('/auth/') || url.pathname.startsWith('/api/');
-    const isOAuthNavigation = request.method === 'GET' &&
-      ['/auth/github', '/auth/github/callback', '/auth/google', '/auth/google/callback'].includes(url.pathname);
+    const isAccountRoute = url.pathname.startsWith('/api/');
     if (isAccountRoute && !allowedOrigins.length) {
       return new Response('ALLOWED_ORIGIN must be configured for account routes.', { status: 503 });
     }
     if (allowedOrigins.length && origin && !allowedOrigins.includes(origin)) {
       return new Response('Forbidden', { status: 403 });
     }
-    if (isAccountRoute && !origin && !isOAuthNavigation) return new Response('Forbidden', { status: 403 });
+    if (isAccountRoute && !origin) return new Response('Forbidden', { status: 403 });
 
     const corsHeaders = {
       'Access-Control-Allow-Origin': origin || allowedOrigins[0] || '*',
@@ -544,27 +334,12 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
     try {
-      if (url.pathname === '/auth/github' && request.method === 'GET') {
-        return await startGitHubSignIn(env, url, allowedOrigins);
-      }
-      if (url.pathname === '/auth/github/callback' && request.method === 'GET') {
-        return await handleGitHubCallback(request, env, url);
-      }
-      if (url.pathname === '/auth/google' && request.method === 'GET') {
-        return await startGoogleSignIn(env, url, allowedOrigins);
-      }
-      if (url.pathname === '/auth/google/callback' && request.method === 'GET') {
-        return await handleGoogleCallback(request, env, url);
-      }
-      if (url.pathname === '/auth/logout' && request.method === 'POST') {
-        return await handleLogout(request, env, corsHeaders);
-      }
       if (url.pathname === '/api/images/generate') {
         if (request.method !== 'POST') return errorResponse('Method not allowed.', 405, corsHeaders);
         return await handleImageGeneration(request, env, corsHeaders);
       }
       if (url.pathname === '/api/chats' || url.pathname.startsWith('/api/chats/')) {
-        return await handleChats(request, env, url, corsHeaders);
+        return await handleChats(request, env, url, corsHeaders, allowedOrigins);
       }
       if (url.pathname !== '/') return errorResponse('Not found.', 404, corsHeaders);
       if (request.method !== 'POST') return errorResponse('Method not allowed.', 405, corsHeaders);

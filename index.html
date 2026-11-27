@@ -1805,12 +1805,6 @@
         gap: 8px;
       }
 
-      .account-signin svg {
-        width: 17px;
-        height: 17px;
-        flex: 0 0 17px;
-      }
-
       .settings-account {
         grid-column: 1 / -1;
         display: grid;
@@ -1939,21 +1933,7 @@
         background: var(--panel-soft) !important;
         color: var(--text) !important;
         box-shadow: none !important;
-      }
-
-      .auth-provider-button:first-child {
-        border-radius: 12px 12px 0 0;
-      }
-
-      .auth-provider-button:last-child {
-        border-top: 0 !important;
-        border-radius: 0 0 12px 12px;
-      }
-
-      .auth-provider-button svg {
-        width: 19px;
-        height: 19px;
-        flex: 0 0 19px;
+        border-radius: 12px;
       }
 
       .auth-error {
@@ -2469,10 +2449,7 @@
             <div class="account-panel">
               <span id="accountStatus" class="account-status" aria-live="polite"></span>
               <button id="signInButton" class="account-signin" type="button">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.77 2.37 3.2 1.68.1-.72.39-1.21.7-1.49-2.48-.28-5.09-1.24-5.09-5.53 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.11-1.45 3.05-1.15 3.05-1.15.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.3-2.61 5.25-5.1 5.53.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"></path>
-                </svg>
-                <span>Sign in</span>
+                <span>Sign in with Clerk</span>
               </button>
               <button id="guestModeButton" type="button">Continue as guest</button>
               <button id="signOutButton" type="button" hidden>Log out</button>
@@ -2557,23 +2534,7 @@
           <div class="auth-mark" aria-hidden="true">✦</div>
           <h2 id="authTitle">Sign in to Taraksh GPT</h2>
           <p id="authDescription" class="auth-intro">Save your chats to your account and continue them on another device.</p>
-          <div class="auth-provider">
-            <button id="googleSignInButton" class="auth-provider-button" type="button">
-              <svg viewBox="0 0 48 48" aria-hidden="true">
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.14-3.08-.41-4.55H24v9.02h12.88c-.58 2.96-2.26 5.48-4.76 7.18l7.73 5.99c4.51-4.17 7.13-10.32 7.13-17.64z"></path>
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.81l-7.73-5.99c-2.15 1.45-4.91 2.3-8.17 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                <path fill="#FBBC05" d="M10.53 28.59A14.3 14.3 0 0 1 9.75 24c0-1.59.27-3.13.78-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.89.93 7.58 2.56 10.78l7.97-6.19z"></path>
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-              </svg>
-              <span>Continue with Google</span>
-            </button>
-            <button id="githubSignInButton" class="auth-provider-button" type="button">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.77 2.37 3.2 1.68.1-.72.39-1.21.7-1.49-2.48-.28-5.09-1.24-5.09-5.53 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.11-1.45 3.05-1.15 3.05-1.15.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.3-2.61 5.25-5.1 5.53.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"></path>
-              </svg>
-              <span>Continue with GitHub</span>
-            </button>
-          </div>
+          <div id="clerkSignInContainer"></div>
           <p id="authError" class="auth-error" role="alert" hidden></p>
           <button id="authGuestButton" class="auth-guest" type="button">Continue as guest</button>
         </section>
@@ -2645,10 +2606,7 @@
       const signInModal = document.getElementById('signInModal');
       const closeSignInButton = document.getElementById('closeSignInButton');
       const authGuestButton = document.getElementById('authGuestButton');
-      const githubSignInButton = document.getElementById('githubSignInButton');
-      const googleSignInButton = document.getElementById('googleSignInButton');
-      const githubSignInLabel = githubSignInButton?.querySelector('span');
-      const googleSignInLabel = googleSignInButton?.querySelector('span');
+      const clerkSignInContainer = document.getElementById('clerkSignInContainer');
       const authError = document.getElementById('authError');
       const fileInput = document.getElementById('fileInput');
       const attachButton = document.getElementById('attachButton');
@@ -2757,15 +2715,14 @@
       const CHAT_LIMIT_ERROR = 'You have reached the 1,000-chat limit. Delete a chat from Recents before creating another. Paid upgrades are not available yet.';
       const MAX_GENERATED_IMAGE_DATA_URL_LENGTH = 150000;
       const guestChatsStorageKey = 'chatbot-guest-chats';
-      const authStorageKey = 'chatbot-account-session';
-      const authCookieName = 'taraksh-gpt-session';
-      const authCookiePath = new URL('.', window.location.href).pathname;
-      const authCookieLifetimeSeconds = 60 * 60 * 24 * 300;
       const guestModeStorageKey = 'chatbot-guest-mode';
       let savedChats = [];
       let currentChatId = createChatId();
-      let pendingAuthError = null;
-      let accountSession = readStoredAccountSession();
+      let accountSession = null;
+      let clerk = null;
+      let clerkInitializationPromise = null;
+      let clerkSignInMounted = false;
+      let activeClerkUserId;
       let guestModeSelected = localStorage.getItem(guestModeStorageKey) === 'true';
       let isRestoringConversation = false;
       let isReplying = false;
@@ -2797,114 +2754,79 @@
           : `chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       }
 
-      function isValidAccountSession(session) {
-        return Boolean(
-          session &&
-          typeof session.token === 'string' &&
-          /^[a-f0-9]{64}$/i.test(session.token) &&
-          ['github', 'google'].includes(session.user?.provider)
-        );
+      localStorage.removeItem('chatbot-account-session');
+      document.cookie = `taraksh-gpt-session=; Max-Age=0; Path=${new URL('.', window.location.href).pathname}; SameSite=Lax; Secure`;
+
+      function loadScript(src, publishableKey) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.async = true;
+          script.crossOrigin = 'anonymous';
+          if (publishableKey) script.dataset.clerkPublishableKey = publishableKey;
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Clerk could not be loaded. Check your connection and Clerk configuration.'));
+          document.head.appendChild(script);
+        });
       }
 
-      function readAccountSessionCookie() {
-        const prefix = `${authCookieName}=`;
-        const cookie = document.cookie
-          .split(';')
-          .map((part) => part.trim())
-          .find((part) => part.startsWith(prefix));
-        if (!cookie) return null;
+      async function initializeClerk() {
+        if (clerk) return clerk;
+        if (clerkInitializationPromise) return clerkInitializationPromise;
 
-        try {
-          const session = JSON.parse(decodeURIComponent(cookie.slice(prefix.length)));
-          if (isValidAccountSession(session)) return session;
-          clearAccountSessionCookie();
-        } catch (error) {
-          console.error('Could not read the saved sign-in cookie.', error);
-          clearAccountSessionCookie();
-        }
-        return null;
-      }
+        clerkInitializationPromise = (async () => {
+          const publishableKey = typeof window.CLERK_PUBLISHABLE_KEY === 'string'
+            ? window.CLERK_PUBLISHABLE_KEY.trim()
+            : '';
+          if (!publishableKey) throw new Error('Clerk sign-in is not configured. Please contact the site administrator.');
 
-      function persistAccountSession(session) {
-        if (!isValidAccountSession(session)) {
-          throw new Error('The sign-in session is invalid.');
-        }
-
-        const value = encodeURIComponent(JSON.stringify(session));
-        document.cookie = `${authCookieName}=${value}; Max-Age=${authCookieLifetimeSeconds}; Path=${authCookiePath}; SameSite=Lax; Secure`;
-        if (!readAccountSessionCookie()) {
-          throw new Error('Your browser did not save the sign-in cookie. Enable cookies for this site and try again.');
-        }
-        localStorage.removeItem(authStorageKey);
-      }
-
-      function clearAccountSessionCookie() {
-        document.cookie = `${authCookieName}=; Max-Age=0; Path=${authCookiePath}; SameSite=Lax; Secure`;
-      }
-
-      function clearStoredAccountSession() {
-        clearAccountSessionCookie();
-        localStorage.removeItem(authStorageKey);
-      }
-
-      function readStoredAccountSession() {
-        try {
-          const callbackParams = new URLSearchParams(window.location.hash.slice(1));
-          const callbackProvider = ['github', 'google'].find((provider) =>
-            callbackParams.has(`${provider}_session`) || callbackParams.has(`${provider}_error`)
-          );
-          const providerSession = callbackProvider ? callbackParams.get(`${callbackProvider}_session`) : null;
-          const providerError = callbackProvider ? callbackParams.get(`${callbackProvider}_error`) : null;
-          let callbackSession = null;
-          if (providerSession) {
-            try {
-              const returnedSession = JSON.parse(providerSession);
-              if (!isValidAccountSession(returnedSession)) {
-                pendingAuthError = 'Sign-in returned an invalid session. Please try again.';
-              } else {
-                persistAccountSession(returnedSession);
-                callbackSession = returnedSession;
-              }
-            } catch (error) {
-              console.error('Could not save the sign-in session.', error);
-              pendingAuthError = error.message || 'Sign-in could not be saved. Please try again.';
-            }
-          } else if (providerError) {
-            pendingAuthError = providerError;
-          }
-          if (callbackProvider) {
-            history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
-          }
-
-          if (callbackSession) return callbackSession;
-
-          const cookieSession = readAccountSessionCookie();
-          if (cookieSession) {
-            try {
-              persistAccountSession(cookieSession);
-            } catch (error) {
-              console.error('Could not extend the saved sign-in cookie.', error);
-              pendingAuthError = error.message || 'The saved sign-in cookie could not be extended.';
-            }
-            return cookieSession;
-          }
-
-          const legacySession = JSON.parse(localStorage.getItem(authStorageKey) || 'null');
-          if (!legacySession) return null;
-          if (!isValidAccountSession(legacySession)) {
-            clearStoredAccountSession();
-            return null;
-          }
+          let clerkDomain;
           try {
-            persistAccountSession(legacySession);
-          } catch (error) {
-            console.error('Could not migrate the saved sign-in session to a cookie.', error);
-            pendingAuthError = error.message || 'The saved sign-in could not be moved to a cookie.';
+            clerkDomain = atob(publishableKey.split('_')[2]).slice(0, -1);
+          } catch {
+            throw new Error('The Clerk publishable key is invalid.');
           }
-          return legacySession;
+          if (!/^[a-z0-9.-]+$/i.test(clerkDomain)) throw new Error('The Clerk publishable key is invalid.');
+
+          await loadScript(`https://${clerkDomain}/npm/@clerk/ui@1/dist/ui.browser.js`);
+          await loadScript(`https://${clerkDomain}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`, publishableKey);
+          if (!window.Clerk || typeof window.Clerk.load !== 'function') {
+            throw new Error('Clerk did not initialize correctly.');
+          }
+          await window.Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+          clerk = window.Clerk;
+          clerk.addListener(({ user }) => setClerkAccount(user));
+          setClerkAccount(clerk.user);
+          return clerk;
+        })();
+
+        try {
+          return await clerkInitializationPromise;
         } catch (error) {
-          console.error('Could not read the saved sign-in session.', error);
-          return null;
+          clerkInitializationPromise = null;
+          throw error;
+        }
+      }
+
+      function setClerkAccount(user) {
+        const userId = user?.id || null;
+        if (userId === activeClerkUserId) return;
+        activeClerkUserId = userId;
+        accountSession = user ? {
+          user: {
+            id: user.id,
+            email: user.primaryEmailAddress?.emailAddress || '',
+            name: user.fullName || user.username || '',
+            picture: user.imageUrl || ''
+          }
+        } : null;
+        updateAccountUi();
+        if (accountSession) {
+          initializeAccount();
+        } else {
+          savedChats = readGuestChats();
+          renderConversationList();
+          renderHistory();
         }
       }
 
@@ -2912,7 +2834,9 @@
         const proxyUrl = getGroqProxyUrl();
         if (!proxyUrl) throw new Error('The Cloudflare Worker URL is not configured.');
         const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
-        if (accountSession?.token) headers.Authorization = `Bearer ${accountSession.token}`;
+        const token = await clerk?.session?.getToken();
+        if (!token) throw new Error('Your Clerk session has expired. Sign in again to sync history.');
+        headers.Authorization = `Bearer ${token}`;
         const response = await fetch(`${proxyUrl}${path}`, {
           ...options,
           headers
@@ -2932,16 +2856,28 @@
         }
       }
 
-      function openSignInModal() {
+      async function openSignInModal() {
         if (!signInModal) return;
         if (authError) {
-          authError.textContent = pendingAuthError || '';
-          authError.hidden = !pendingAuthError;
-          pendingAuthError = null;
+          authError.textContent = '';
+          authError.hidden = true;
         }
         signInModal.hidden = false;
         updateAccountUi();
         closeSignInButton.focus();
+        try {
+          const clerkInstance = await initializeClerk();
+          if (!clerkSignInMounted && clerkSignInContainer) {
+            clerkInstance.mountSignIn(clerkSignInContainer);
+            clerkSignInMounted = true;
+          }
+        } catch (error) {
+          console.error('Could not render Clerk sign-in.', error);
+          if (authError) {
+            authError.textContent = error.message || 'Clerk sign-in could not be loaded.';
+            authError.hidden = false;
+          }
+        }
       }
 
       function closeSignInModal() {
@@ -2952,63 +2888,33 @@
       }
 
       function updateAccountUi() {
-        const signedIn = Boolean(accountSession?.token && accountSession.user);
-        const githubConfigured = typeof window.GITHUB_CLIENT_ID === 'string' && window.GITHUB_CLIENT_ID.trim();
-        const googleConfigured = typeof window.GOOGLE_CLIENT_ID === 'string' && window.GOOGLE_CLIENT_ID.trim();
+        const signedIn = Boolean(accountSession?.user);
         if (accountStatus) {
-          const providerName = accountSession?.user?.provider === 'google' ? 'Google' : 'GitHub';
           const accountId = accountSession?.user?.email || accountSession?.user?.id || '';
           accountStatus.textContent = signedIn
-            ? `${providerName} account · ${accountId}`
+            ? `Clerk account · ${accountId}`
             : '';
           accountStatus.title = accountStatus.textContent;
         }
         if (signInButton) signInButton.hidden = signedIn;
         if (guestModeButton) guestModeButton.hidden = signedIn || guestModeSelected;
         if (signOutButton) signOutButton.hidden = !signedIn;
-        if (githubSignInButton) {
-          githubSignInButton.hidden = signedIn;
-          githubSignInButton.disabled = !githubConfigured;
-          if (githubSignInLabel) {
-            githubSignInLabel.textContent = githubConfigured ? 'Continue with GitHub' : 'GitHub sign-in needs setup';
-          }
-        }
-        if (googleSignInButton) {
-          googleSignInButton.hidden = signedIn;
-          googleSignInButton.disabled = !googleConfigured;
-          if (googleSignInLabel) {
-            googleSignInLabel.textContent = googleConfigured ? 'Continue with Google' : 'Google sign-in needs setup';
-          }
-        }
       }
 
-      function startProviderSignIn(provider) {
-        const providerName = provider === 'google' ? 'Google' : 'GitHub';
-        if (isReplying) {
-          if (authError) {
-            authError.textContent = 'Finish the current reply before signing in.';
-            authError.hidden = false;
-          }
+      async function initializeClerkAuth() {
+        if (!window.CLERK_PUBLISHABLE_KEY) {
+          savedChats = readGuestChats();
+          updateAccountUi();
           return;
         }
-        const clientId = provider === 'google' ? window.GOOGLE_CLIENT_ID : window.GITHUB_CLIENT_ID;
-        if (!clientId) {
-          if (authError) {
-            authError.textContent = `${providerName} sign-in is not configured. Please contact the site administrator.`;
-            authError.hidden = false;
-          }
-          return;
+        try {
+          await initializeClerk();
+        } catch (error) {
+          console.error('Could not initialize Clerk.', error);
+          savedChats = readGuestChats();
+          updateAccountUi();
+          if (accountStatus) accountStatus.textContent = `Guest mode · ${error.message}`;
         }
-        const proxyUrl = getGroqProxyUrl();
-        if (!proxyUrl) {
-          if (authError) {
-            authError.textContent = 'The Cloudflare Worker URL is not configured.';
-            authError.hidden = false;
-          }
-          return;
-        }
-        const returnTo = `${window.location.origin}${window.location.pathname}`;
-        window.location.assign(`${proxyUrl}/auth/${provider}?return_to=${encodeURIComponent(returnTo)}`);
       }
 
       async function loadAccountChats() {
@@ -3041,11 +2947,8 @@
           renderConversationList();
         } catch (error) {
           console.error('Could not load account chat history.', error);
-          accountSession = null;
-          clearStoredAccountSession();
-          savedChats = readGuestChats();
           updateAccountUi();
-          if (accountStatus) accountStatus.textContent = `Guest mode · ${error.message}`;
+          if (accountStatus) accountStatus.textContent = `Clerk account · history unavailable: ${error.message}`;
         }
       }
 
@@ -4728,12 +4631,13 @@
         signOutButton.addEventListener('click', async () => {
           if (isReplying) return;
           try {
-            await accountRequest('/auth/logout', { method: 'POST', body: '{}' });
+            if (!clerk) throw new Error('Clerk is not initialized.');
+            await clerk.signOut();
           } catch (error) {
-            console.error('Could not revoke the server session.', error);
+            console.error('Could not sign out of Clerk.', error);
+            if (accountStatus) accountStatus.textContent = `Could not sign out: ${error.message}`;
+            return;
           }
-          accountSession = null;
-          clearStoredAccountSession();
           guestModeSelected = true;
           localStorage.setItem(guestModeStorageKey, 'true');
           savedChats = readGuestChats();
@@ -4747,8 +4651,6 @@
       }
 
       if (signInButton) signInButton.addEventListener('click', openSignInModal);
-      if (githubSignInButton) githubSignInButton.addEventListener('click', () => startProviderSignIn('github'));
-      if (googleSignInButton) googleSignInButton.addEventListener('click', () => startProviderSignIn('google'));
       if (closeSignInButton) closeSignInButton.addEventListener('click', closeSignInModal);
       if (signInModal) {
         signInModal.addEventListener('click', (event) => {
@@ -5150,9 +5052,8 @@
       if (replyModeToggle) replyModeToggle.checked = apiModeEnabled;
       if (replyModeLabel) replyModeLabel.textContent = apiModeEnabled ? 'Smart mode' : 'Normal mode';
       showWelcomeMessage();
-      initializeAccount();
+      initializeClerkAuth();
       updateAccountUi();
-      if (pendingAuthError) openSignInModal();
 
       chatForm.addEventListener('submit', async (event) => {
         event.preventDefault();
