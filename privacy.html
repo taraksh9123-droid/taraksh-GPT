@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Privacy Policy for Taraksh GPT, including Google sign-in, chat storage, and connected service providers." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://taraksh9123-droid.github.io/taraksh-GPT/privacy.html" />
+    <title>Privacy Policy | Taraksh GPT</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #080f1e;
+        color: #e7eefb;
+      }
+
+      body {
+        box-sizing: border-box;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 48px 24px;
+        line-height: 1.65;
+      }
+
+      h1, h2 {
+        line-height: 1.2;
+        color: #f8fafc;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+        font-size: clamp(2rem, 5vw, 3rem);
+      }
+
+      h2 {
+        margin-top: 32px;
+        font-size: 1.25rem;
+      }
+
+      p, li {
+        color: #c4d0e2;
+      }
+
+      a {
+        color: #67e8f9;
+      }
+
+      .updated {
+        color: #9eacc2;
+      }
+
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="./">Back to Taraksh GPT</a></p>
+      <h1>Privacy Policy</h1>
+      <p class="updated">Effective date: November 27, 2026</p>
+      <p>
+        This policy explains how Taraksh GPT, a browser-based chat, coding, and search assistant
+        created by Taraksh Choudhary, accesses and handles information when you use the app.
+      </p>
+
+      <h2>Information collected and how it is used</h2>
+      <p>
+        You can use the app as a guest or sign in with Google or GitHub. If you sign in, the
+        provider returns an account identifier and the profile details it makes available
+        (typically your name, email address, and profile picture). Google sign-in requests only
+        the OpenID Connect <code>openid</code>, <code>email</code>, and <code>profile</code>
+        scopes. The app uses these details to authenticate you, identify your account, show your
+        account information, and associate your saved chats with your account. Google account data
+        is not sold, used for advertising, or used to train AI or machine-learning models.
+      </p>
+      <p>
+        For signed-in accounts, the app stores the provider identifier and available profile
+        details, app sign-in session records, and the chats you choose to save. Chat records
+        include their titles, messages, timestamps, and any generated image attached to a chat.
+        The app does not ask for your Google password.
+      </p>
+
+      <h2>Chats, prompts, and connected services</h2>
+      <p>
+        Guest chats and app preferences are stored in your browser's local storage. When you sign
+        in, chats are stored in the app's Cloudflare D1 database so they can be loaded across
+        devices. When you sign in while guest chats are saved, the app copies those chats into your
+        account. Signing out does not delete saved account chats.
+      </p>
+      <ul>
+        <li>
+          When you use Smart chat, code review, or AI-generated chat titles, relevant prompts and
+          conversation text are sent through the app's Cloudflare Worker to Groq to produce a
+          response or title.
+        </li>
+        <li>
+          When you request an image, the image prompt is sent to Cloudflare Workers AI. The
+          generated image is returned to the browser and may be saved with its chat.
+        </li>
+        <li>
+          When you use web search, your search query is sent to DuckDuckGo.
+        </li>
+        <li>
+          For weather, a city name is sent to Open-Meteo for geocoding, or (if you choose to use
+          your current location) your browser-provided coordinates are sent to Open-Meteo for the
+          forecast.
+        </li>
+        <li>
+          Image understanding runs in your browser using models downloaded from jsDelivr and
+          Hugging Face. The selected image is processed locally by the browser feature and is not
+          uploaded to the app's Worker for image understanding.
+        </li>
+      </ul>
+      <p>
+        These services receive the information needed for the feature you request and process it
+        under their own privacy policies. Google profile data is used only for sign-in and the
+        account features described here. It is not sold, used for advertising or AI-model training,
+        or sent to Groq or image-generation services by the app.
+      </p>
+
+      <h2>Storage, security, and retention</h2>
+      <p>
+        The browser stores the app sign-in session in a Secure, SameSite cookie for up to 300 days.
+        The Worker stores a SHA-256 hash of the app session token in the database rather than the
+        token itself. Temporary OAuth flow cookies are used to complete and validate sign-in. The
+        app uses HTTPS for hosted sign-in and service requests.
+      </p>
+      <p>
+        Guest conversations remain in your browser until you delete them or clear the site's
+        storage. Signed-in chats remain in the account until you delete them. App session records
+        expire and are revoked when you sign out. To request deletion of account profile data,
+        contact us using the details below. We do not set an app analytics or advertising cookie.
+      </p>
+
+      <h2>Optional browser features</h2>
+      <p>
+        Voice input, speech playback, and current-location weather are optional browser features.
+        They require your browser's relevant permissions or support. Voice recognition may be
+        processed by your browser or its provider under their own terms; the app does not send
+        microphone audio to its own Worker. You can deny microphone or location access and continue
+        using other features.
+      </p>
+
+      <h2>Your choices and contact</h2>
+      <p>
+        You can delete chats in the app, clear guest chats and preferences by clearing this site's
+        browser storage, or sign out to revoke the app session. For a request to delete account
+        profile data or for privacy questions, contact
+        <a href="mailto:Taraksh9123@gmail.com">Taraksh9123@gmail.com</a>.
+        Include the email associated with the account if relevant, but never send your password,
+        access token, or an authentication code.
+      </p>
+      <p>
+        This policy may be updated when the app's data practices change. The current version will
+        remain available at this page.
+      </p>
+    </main>
+  </body>
+</html>

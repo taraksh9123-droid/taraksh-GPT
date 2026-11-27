@@ -142,6 +142,7 @@ There is no package manager manifest or bundled automated test suite. Before pub
 
 ## Privacy and limitations
 
+- Read the [Privacy Policy](./privacy.html) and [Terms of Service](./terms.html) for the app's data practices and usage terms.
 - Chat requests in Smart mode are sent to Groq.
 - Smart mode sends the first user message and assistant reply to Groq once more to generate a concise title. Older chats whose title still matches the first prompt retry title generation when opened in Smart mode; if generation fails, the first prompt remains the fallback.
 - Signed-in chat transcripts are stored in the configured Cloudflare D1 database. Guest transcripts remain in this browser's local storage.
@@ -164,6 +165,8 @@ schema.sql                     D1 users, auth_sessions, and chats tables and ind
 README.md                      Setup, architecture, deployment, privacy, and feature documentation
 robots.txt                     Search crawler rules
 sitemap.xml                    Public-site sitemap
+privacy.html                    Public privacy policy for Google sign-in and app data
+terms.html                      Public terms of service
 google0ae9b6fc5df16510.html     Google site-verification file
 ```
 
