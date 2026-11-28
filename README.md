@@ -20,6 +20,12 @@ A browser-based AI assistant for chat, coding, web searches, weather updates, im
 - **Clerk sign-in** with per-account conversation history stored in Cloudflare D1
 - **Up to 1,000 saved chats** per guest browser or signed-in account
 
+## Screenshots
+
+| Desktop | Mobile |
+| --- | --- |
+| ![Taraksh GPT on desktop](screenshots/chat-desktop.png) | ![Taraksh GPT on mobile](screenshots/chat-mobile.png) |
+
 ## How the app is built
 
 The project is a static, browser-first application with a small server-side proxy:
@@ -34,13 +40,14 @@ The project is a static, browser-first application with a small server-side prox
 
 | Feature | Flow |
 | --- | --- |
-| Smart chat and AI titles | Browser → `POST /` on the Worker → Groq Chat Completions API |
+| Smart chat and AI titles | Browser → `POST /` on the Worker → Groq Chat Completions API; text chat can use Groq browser search for fresh information |
+| Image understanding | Browser resizes and compresses the image → Worker → Groq vision model |
 | Image generation | Browser → `POST /api/images/generate` → Cloudflare Workers AI (`@cf/black-forest-labs/flux-1-schnell`) |
 | Clerk sign-in | Browser → Clerk JavaScript SDK; browser sends a Clerk session token to the Worker for verification |
 | Signed-in history | Browser → Worker `/api/chats...` → Cloudflare D1, scoped to the verified account |
 | Guest history | Browser → this browser's `localStorage`; it is not uploaded unless the user signs in and history migration runs |
-| Search and weather | Browser → DuckDuckGo and Open-Meteo |
-| Python and image understanding | Browser downloads Pyodide or Transformers.js models when those features are used |
+| Normal-mode web search and weather | Browser → DuckDuckGo and Open-Meteo |
+| Python | Browser downloads Pyodide when Python execution is used |
 
 The Worker applies the configured `ALLOWED_ORIGIN` check to API requests and returns CORS headers for approved origins. Browser code does not receive the Groq API key or Clerk secret key.
 
@@ -54,7 +61,7 @@ The Worker applies the configured `ALLOWED_ORIGIN` check to API requests and ret
 - Markdown tables and inline formatting in assistant replies are rendered in the chat. The application stores message content so history can be restored and exported.
 - TXT and Markdown exports download the current conversation. PDF uses the browser print dialog; choose **Save as PDF**. Generated images are included in saved history and supported exports.
 - The Code workspace can run JavaScript in the browser, show HTML previews, load Pyodide for Python, and use the Code Agent to explain, review, fix, or create code in the editor.
-- Voice recognition, speech synthesis, Python, image understanding, and network-backed services depend on browser support, model downloads, and connectivity.
+- Voice recognition, speech synthesis, Python, image understanding, and network-backed services depend on browser support and connectivity. Image understanding requires the configured Worker and Groq vision-model availability.
 
 ### Saved data and limits
 
@@ -69,7 +76,7 @@ The app sends Smart mode requests to the configured Cloudflare Worker, which pro
 
 `https://api.groq.com/openai/v1/chat/completions`
 
-The current default model is `openai/gpt-oss-20b`. Do not put a Groq key in `index.html`, GitHub Pages, or `config.js`. Deploy `worker.js`, store the key in the Worker secret `GROQ_API_KEY`, and set only the proxy URL in `config.js`.
+Smart text chat uses `openai/gpt-oss-20b`, which supports Groq's built-in browser search and is currently the lowest-priced publicly listed production model with that capability ($0.075 per million input tokens and $0.30 per million output tokens; see [Groq's current model pricing](https://console.groq.com/docs/models)). Browser search is enabled for text chats, and the model uses it when the question needs current information. Image understanding uses a separate vision-capable model. Do not put a Groq key in `index.html`, GitHub Pages, or `config.js`. Deploy `worker.js`, store the key in the Worker secret `GROQ_API_KEY`, and set only the proxy URL in `config.js`.
 
 The Worker forwards the model, messages, temperature, and completion-token settings it needs. It does not expose the Groq credential to the browser.
 
@@ -138,12 +145,14 @@ For GitHub Pages:
 
 For local development, open `index.html` in a browser. Normal mode and guest history can be explored without a build step. Smart chat, generated images, Clerk sign-in, and account history require a reachable, correctly configured Worker. A `file://` preview is not a substitute for testing the published HTTPS site because browser origin checks differ.
 
-There is no package manager manifest or bundled automated test suite. Before publishing Worker changes, run `node --check worker.js`; also test the affected flow from the deployed site. Python execution and image understanding may download runtime/model files on first use.
+There is no package manager manifest or bundled automated test suite. Before publishing Worker changes, run `node --check worker.js`; also test the affected flow from the deployed site. Python execution may download runtime files on first use.
 
 ## Privacy and limitations
 
 - Read the [Privacy Policy](./privacy.html) and [Terms of Service](./terms.html) for the app's data practices and usage terms.
 - Chat requests in Smart mode are sent to Groq.
+- Smart text chat can use Groq's built-in browser search (powered by Exa) for current information; normal-mode web searches use DuckDuckGo.
+- Attached images and their prompts are sent through the configured Worker to Groq for image understanding.
 - Smart mode sends the first user message and assistant reply to Groq once more to generate a concise title. Older chats whose title still matches the first prompt retry title generation when opened in Smart mode; if generation fails, the first prompt remains the fallback.
 - Signed-in chat transcripts are stored in the configured Cloudflare D1 database. Guest transcripts remain in this browser's local storage.
 - Image prompts are processed by Cloudflare Workers AI, and generated images are saved with their conversations.
@@ -163,6 +172,9 @@ config.example.js              Safe template for public frontend configuration
 wrangler.toml                  Worker name, D1 binding, Workers AI binding, and compatibility date
 schema.sql                     D1 users and chats tables and indexes
 README.md                      Setup, architecture, deployment, privacy, and feature documentation
+favicon.svg                    Scalable site icon
+favicon.png                    PNG site icon for browser compatibility
+screenshots/                   Desktop and mobile interface screenshots
 robots.txt                     Search crawler rules
 sitemap.xml                    Public-site sitemap
 privacy.html                    Public privacy policy for Clerk sign-in and app data

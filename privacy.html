@@ -6,6 +6,8 @@
     <meta name="description" content="Privacy Policy for Taraksh GPT, including Clerk sign-in, chat storage, and connected service providers." />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://taraksh9123-droid.github.io/taraksh-GPT/privacy.html" />
+    <link rel="icon" type="image/png" sizes="96x96" href="./favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>Privacy Policy | Taraksh GPT</title>
     <style>
       :root {
@@ -93,7 +95,8 @@
           generated image is returned to the browser and may be saved with its chat.
         </li>
         <li>
-          When you use web search, your search query is sent to DuckDuckGo.
+          Normal-mode web searches send your query to DuckDuckGo. In Smart chat, Groq may use its
+          built-in browser search, powered by Exa, to find current information and sources.
         </li>
         <li>
           For weather, a city name is sent to Open-Meteo for geocoding, or (if you choose to use
@@ -101,9 +104,8 @@
           forecast.
         </li>
         <li>
-          Image understanding runs in your browser using models downloaded from jsDelivr and
-          Hugging Face. The selected image is processed locally by the browser feature and is not
-          uploaded to the app's Worker for image understanding.
+          When you attach an image in chat, the browser resizes and compresses it, then sends it
+          with your prompt through the app's Cloudflare Worker to Groq for image understanding.
         </li>
       </ul>
       <p>

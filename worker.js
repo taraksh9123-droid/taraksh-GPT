@@ -266,6 +266,10 @@ async function handleGroq(request, env, corsHeaders) {
   if (body.reasoning_effort !== undefined) {
     groqRequestBody.reasoning_effort = body.reasoning_effort;
   }
+  if (body.enable_browser_search === true && groqRequestBody.model === 'openai/gpt-oss-20b') {
+    groqRequestBody.tools = [{ type: 'browser_search' }];
+    groqRequestBody.tool_choice = 'auto';
+  }
 
   const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
