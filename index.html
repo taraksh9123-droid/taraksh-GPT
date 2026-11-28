@@ -3548,6 +3548,7 @@
 
       function cleanAssistantText(text) {
         return String(text || '')
+          .replace(/【\s*\d+(?:\s*†\s*L\d+(?:\s*[-–]\s*L?\d+)?)?\s*】/g, '')
           .replace(/```(?:[a-z0-9_-]+)?\s*([\s\S]*?)```/gi, '$1')
           .replace(/^\s*#{1,6}\s+/gm, '')
           .replace(/^\s*(?:[-*_]\s*){3,}\s*$/gm, '')
