@@ -3,47 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Taraksh's Chatbot is a free browser-based AI assistant created by Taraksh Choudhary for helpful conversations, web search, image understanding, voice chat, coding, calculations, weather updates, and saved chat history." />
-    <meta name="keywords" content="Taraksh Choudhary, Taraksh's Chatbot, AI chatbot, browser chatbot, coding assistant, web search, voice chat, image recognition, calculator" />
+    <meta name="description" content="Meet Taraksh GPT, a free AI assistant for chat, web search, image understanding, coding, voice, calculations, weather, and saved conversations." />
+    <meta name="keywords" content="Taraksh GPT, Taraksh Choudhary, AI chatbot, browser AI assistant, coding assistant, web search, voice chat, image understanding, calculator" />
     <meta name="author" content="Taraksh Choudhary" />
     <meta name="creator" content="Taraksh Choudhary" />
-    <meta name="application-name" content="Taraksh's Chatbot" />
+    <meta name="application-name" content="Taraksh GPT" />
     <meta name="category" content="AI assistant, productivity, education, coding" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="googlebot" content="index, follow" />
     <meta name="theme-color" content="#060d1d" />
     <link rel="canonical" href="https://taraksh9123-droid.github.io/taraksh-GPT/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Taraksh's Chatbot - AI Assistant" />
-    <meta property="og:description" content="Chat, search the web, understand images, use voice input, run code, calculate, check weather, and save conversations in one browser-based AI assistant." />
-    <meta property="og:site_name" content="Taraksh's Chatbot" />
+    <meta property="og:title" content="Taraksh GPT | Free AI Chat, Web Search &amp; Coding Assistant" />
+    <meta property="og:description" content="Chat, search the web, understand images, use voice, code, calculate, check weather, and save conversations with Taraksh GPT." />
+    <meta property="og:site_name" content="Taraksh GPT" />
     <meta property="og:url" content="https://taraksh9123-droid.github.io/taraksh-GPT/" />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Taraksh's Chatbot - AI Assistant" />
-    <meta name="twitter:description" content="A browser-based AI assistant created by Taraksh Choudhary." />
-    <title>Taraksh's Chatbot | AI Assistant for Chat, Code and Search</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230b1324'/%3E%3Cpath d='M32 8l6.5 18.5L57 33l-18.5 6.5L32 58l-6.5-18.5L7 33l18.5-6.5L32 8z' fill='%2367e8f9'/%3E%3Cpath d='M32 20v26M19 33h26' stroke='%230b1324' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <meta name="twitter:title" content="Taraksh GPT | Free AI Chat, Web Search &amp; Coding Assistant" />
+    <meta name="twitter:description" content="Chat, search the web, understand images, use voice, code, calculate, check weather, and save conversations with Taraksh GPT." />
+    <title>Taraksh GPT | Free AI Chat, Web Search &amp; Coding Assistant</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <style>
       :root {
-        --bg: #080b19;
-        --bg-secondary: #17112d;
-        --panel: #101629;
-        --panel-soft: #171f38;
-        --panel-strong: #111a30;
-        --primary: #b18aff;
-        --primary-strong: #8057f5;
-        --secondary: #35e0d0;
-        --tertiary: #ff70b8;
-        --warm: #ffd166;
+        --bg: #080b18;
+        --bg-secondary: #11132c;
+        --panel: #10172a;
+        --panel-soft: #17213a;
+        --panel-strong: #1c2742;
+        --primary: #c084fc;
+        --primary-strong: #8b5cf6;
+        --secondary: #22d3ee;
+        --tertiary: #fb7185;
+        --warm: #fbbf24;
         --success: #34d399;
-        --text: #f5f3ff;
-        --muted: #abb5d1;
-        --user: linear-gradient(135deg, #8057f5 0%, #536dfe 54%, #20bfc9 100%);
-        --assistant: linear-gradient(135deg, rgba(23, 36, 58, 0.98), rgba(17, 28, 45, 0.94));
-        --border: rgba(177, 138, 255, 0.22);
-        --shadow: 0 24px 60px rgba(8, 15, 30, 0.5);
-        --glow: rgba(137, 98, 255, 0.24);
-        --glow-secondary: rgba(53, 224, 208, 0.2);
+        --text: #f8f7ff;
+        --muted: #a7b2cc;
+        --user: linear-gradient(135deg, #9333ea 0%, #6366f1 52%, #0891b2 100%);
+        --assistant: linear-gradient(145deg, rgba(24, 35, 59, 0.98), rgba(17, 27, 47, 0.96));
+        --border: rgba(167, 139, 250, 0.2);
+        --shadow: 0 26px 70px rgba(3, 7, 18, 0.46);
+        --glow: rgba(139, 92, 246, 0.25);
+        --glow-secondary: rgba(34, 211, 238, 0.18);
       }
 
       body.light-mode {
@@ -71,28 +72,11 @@
       * { box-sizing: border-box; }
 
       html {
-        scrollbar-width: thin;
-        scrollbar-color: var(--primary) transparent;
+        scrollbar-width: none;
       }
 
       html::-webkit-scrollbar {
-        width: 10px;
-      }
-
-      html::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      html::-webkit-scrollbar-thumb {
-        border: 3px solid transparent;
-        border-radius: 999px;
-        background: var(--primary);
-        background-clip: padding-box;
-      }
-
-      html::-webkit-scrollbar-thumb:hover {
-        background: var(--primary-strong);
-        background-clip: padding-box;
+        display: none;
       }
 
       body {
@@ -505,14 +489,25 @@
       }
 
       .generated-image-download {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
         color: var(--secondary);
-        font-size: 0.84rem;
-        font-weight: 700;
-        text-decoration: none;
+        transition: background 0.2s ease, border-color 0.2s ease;
       }
 
       .generated-image-download:hover {
-        text-decoration: underline;
+        border-color: var(--secondary);
+        background: rgba(34, 211, 238, 0.1);
+      }
+
+      .generated-image-download svg {
+        width: 18px;
+        height: 18px;
       }
 
       .assistant-table {
@@ -1517,6 +1512,19 @@
         letter-spacing: -0.045em;
       }
 
+      .brand-wordmark {
+        display: block;
+        white-space: nowrap;
+        background: linear-gradient(105deg, #fff 8%, #d8b4fe 58%, #67e8f9 100%);
+        background-clip: text;
+        color: transparent;
+        -webkit-background-clip: text;
+        font-weight: 850;
+        font-size: 1.02rem;
+        letter-spacing: -0.04em;
+        text-shadow: 0 2px 18px rgba(139, 92, 246, 0.2);
+      }
+
       .sidebar-brand .app-logo {
         width: 38px;
         height: 38px;
@@ -1853,24 +1861,48 @@
         z-index: 20;
         display: grid;
         place-items: center;
-        padding: 20px;
-        background: rgba(3, 8, 18, 0.78);
-        backdrop-filter: blur(7px);
+        padding: 16px;
+        background: rgba(3, 8, 18, 0.82);
+        backdrop-filter: blur(10px);
       }
 
       .auth-backdrop[hidden] { display: none; }
 
       .auth-card {
         position: relative;
-        width: min(440px, 100%);
-        max-height: min(90vh, 760px);
-        overflow-y: auto;
-        padding: 34px;
-        border: 1px solid var(--border);
-        border-radius: 22px;
-        background: var(--panel);
+        width: min(440px, calc(100vw - 32px));
+        max-height: calc(100dvh - 32px);
+        overflow: hidden;
+        scrollbar-width: none;
+        padding: 20px 28px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid rgba(168, 85, 247, 0.28);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.16), transparent 220px),
+          linear-gradient(145deg, rgba(25, 37, 58, 0.98), rgba(10, 18, 31, 0.98));
         color: var(--text);
-        box-shadow: var(--shadow);
+        box-shadow: 0 24px 70px rgba(2, 7, 18, 0.48), 0 0 0 1px rgba(255,255,255,0.035) inset;
+        text-align: center;
+      }
+
+      body.light-mode .auth-card {
+        background:
+          radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.12), transparent 220px),
+          linear-gradient(145deg, rgba(255,255,255,0.98), rgba(244,248,255,0.98));
+      }
+
+      .auth-card::-webkit-scrollbar {
+        display: none;
+      }
+
+      #clerkSignInContainer {
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        justify-content: center;
       }
 
       .auth-close {
@@ -1884,7 +1916,7 @@
         border-radius: 50%;
         background: var(--panel-soft);
         color: var(--text);
-        box-shadow: none;
+        box-shadow: 0 8px 18px rgba(2, 7, 18, 0.18);
         font-size: 1.2rem;
       }
 
@@ -1893,7 +1925,7 @@
         width: 46px;
         height: 46px;
         place-items: center;
-        margin-bottom: 20px;
+        margin: 0 auto 10px;
         border: 1px solid var(--border);
         border-radius: 14px;
         background: var(--panel-soft);
@@ -1908,7 +1940,8 @@
       }
 
       .auth-intro {
-        margin: 9px 0 22px;
+        margin: 6px auto 12px;
+        max-width: 340px;
         color: var(--muted);
         line-height: 1.55;
       }
@@ -1945,8 +1978,8 @@
 
       .auth-guest {
         width: 100%;
-        margin-top: 18px;
-        padding: 10px 12px;
+        margin-top: 12px;
+        padding: 9px 12px;
         border: 1px solid var(--border);
         background: transparent;
         color: var(--text);
@@ -1964,6 +1997,11 @@
         min-height: 0;
         flex: 1;
         overflow: auto;
+        scrollbar-width: none;
+      }
+
+      .workspace > .panel::-webkit-scrollbar {
+        display: none;
       }
 
       .workspace > #chatPanel.active {
@@ -2154,7 +2192,7 @@
         }
         .account-status { white-space: normal; }
         .account-panel button { justify-self: start; padding: 6px 8px; }
-        .auth-card { padding: 28px 22px 22px; }
+        .auth-card { padding: 20px 16px 16px; }
         .chat-messages { padding: 18px 14px; }
         .chat-form { width: calc(100% - 20px); margin: 8px 10px; }
         .message-shell.user { max-width: 92%; }
@@ -2170,6 +2208,330 @@
         flex-wrap: wrap;
         justify-content: flex-end;
         gap: 8px;
+      }
+
+      body {
+        min-height: 100dvh;
+        background:
+          radial-gradient(ellipse at 4% 8%, rgba(139, 92, 246, 0.24), transparent 34rem),
+          radial-gradient(ellipse at 92% 10%, rgba(34, 211, 238, 0.16), transparent 30rem),
+          radial-gradient(ellipse at 70% 100%, rgba(251, 113, 133, 0.1), transparent 36rem),
+          linear-gradient(135deg, var(--bg), #0c1022 52%, var(--bg-secondary));
+        background-attachment: fixed;
+      }
+
+      body.light-mode {
+        background:
+          radial-gradient(ellipse at 4% 8%, rgba(139, 92, 246, 0.14), transparent 34rem),
+          radial-gradient(ellipse at 92% 10%, rgba(34, 211, 238, 0.14), transparent 30rem),
+          linear-gradient(135deg, #f8f7ff, #eef7ff 58%, #fff4f7);
+        background-attachment: fixed;
+      }
+
+      body::before {
+        opacity: 0.1;
+        background-size: 48px 48px;
+      }
+
+      .app-shell {
+        height: 100dvh;
+        min-height: 0;
+      }
+
+      .chat-shell {
+        background:
+          radial-gradient(ellipse at 85% 4%, rgba(34, 211, 238, 0.07), transparent 34rem),
+          radial-gradient(ellipse at 52% 100%, rgba(139, 92, 246, 0.08), transparent 42rem),
+          var(--bg);
+      }
+
+      body.light-mode .chat-shell {
+        background:
+          radial-gradient(ellipse at 85% 4%, rgba(34, 211, 238, 0.08), transparent 34rem),
+          radial-gradient(ellipse at 52% 100%, rgba(139, 92, 246, 0.07), transparent 42rem),
+          #f7f8ff;
+      }
+
+      .app-sidebar {
+        background:
+          radial-gradient(circle at 12% 0%, rgba(192, 132, 252, 0.2), transparent 35%),
+          radial-gradient(circle at 0% 85%, rgba(34, 211, 238, 0.11), transparent 38%),
+          linear-gradient(180deg, #15152f 0%, #10172a 62%, #0c1425 100%);
+        border-right-color: rgba(167, 139, 250, 0.18);
+      }
+
+      body.light-mode .app-sidebar {
+        background:
+          radial-gradient(circle at 12% 0%, rgba(192, 132, 252, 0.13), transparent 35%),
+          linear-gradient(180deg, #f4f0ff 0%, #edf4ff 100%);
+      }
+
+      .sidebar-brand .app-logo {
+        border-color: rgba(34, 211, 238, 0.75);
+        box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.08), 0 10px 24px rgba(5, 10, 25, 0.28);
+      }
+
+      .new-chat-btn {
+        height: 42px;
+        border: 1px solid rgba(192, 132, 252, 0.38);
+        border-radius: 13px;
+        background: linear-gradient(110deg, rgba(147, 51, 234, 0.32), rgba(8, 145, 178, 0.2));
+        box-shadow: inset 0 1px rgba(255,255,255,0.12), 0 8px 22px rgba(7, 8, 28, 0.18);
+      }
+
+      .tab-buttons { gap: 6px; }
+
+      .tab-btn {
+        min-height: 40px;
+        border-radius: 12px;
+        transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      }
+
+      .tab-btn:hover,
+      .tab-btn.active {
+        border-left: 0;
+        background: linear-gradient(100deg, rgba(139, 92, 246, 0.22), rgba(34, 211, 238, 0.1));
+        box-shadow: inset 3px 0 #22d3ee, 0 8px 22px rgba(5, 10, 24, 0.18);
+      }
+
+      body.light-mode .tab-btn:hover,
+      body.light-mode .tab-btn.active {
+        color: #242046;
+        background: linear-gradient(100deg, rgba(139, 92, 246, 0.13), rgba(8, 145, 178, 0.1));
+      }
+
+      .tab-btn .nav-icon { color: var(--secondary); }
+
+      .sidebar-history-heading {
+        padding-top: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.68rem;
+      }
+
+      .workspace { min-width: 0; }
+
+      .workspace > .panel {
+        overscroll-behavior: contain;
+      }
+
+      .chat-messages {
+        width: min(100%, 900px);
+        padding: clamp(20px, 4vw, 42px);
+        gap: 20px;
+      }
+
+      .empty-chat-state {
+        width: min(100%, 680px);
+        gap: 16px;
+      }
+
+      .empty-chat-state::before {
+        content: "What would you like to explore?";
+        display: block;
+        margin: 0 0 2px;
+        background: linear-gradient(100deg, var(--text) 10%, var(--primary) 58%, var(--secondary));
+        background-clip: text;
+        color: transparent;
+        -webkit-background-clip: text;
+        font-size: clamp(1.45rem, 3vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.045em;
+        text-align: center;
+      }
+
+      .quick-start-grid { gap: 12px; }
+
+      .quick-start-btn {
+        position: relative;
+        min-height: 94px;
+        overflow: hidden;
+        padding: 18px;
+        border-color: rgba(167, 139, 250, 0.18);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1), transparent 58%),
+          linear-gradient(145deg, rgba(192, 132, 252, 0.11), rgba(23, 33, 58, 0.86));
+        box-shadow: inset 0 1px rgba(255,255,255,0.06), 0 10px 28px rgba(4, 8, 20, 0.12);
+      }
+
+      body.light-mode .quick-start-btn {
+        background: linear-gradient(145deg, rgba(192, 132, 252, 0.1), rgba(34, 211, 238, 0.06), #fff);
+      }
+
+      .quick-start-btn strong {
+        font-size: 0.94rem;
+        letter-spacing: -0.015em;
+      }
+
+      .quick-start-btn span { font-size: 0.8rem; }
+
+      .quick-start-btn:nth-child(2) { border-top-color: rgba(34, 211, 238, 0.48); }
+      .quick-start-btn:nth-child(3) { border-top-color: rgba(251, 113, 133, 0.48); }
+      .quick-start-btn:nth-child(4) { border-top-color: rgba(251, 191, 36, 0.48); }
+
+      .chat-form {
+        border: 1px solid rgba(167, 139, 250, 0.26);
+        border-radius: 22px;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.09), rgba(34, 211, 238, 0.055)), var(--panel);
+        box-shadow: 0 14px 40px rgba(3, 7, 18, 0.26), inset 0 1px rgba(255,255,255,0.06);
+      }
+
+      body.light-mode .chat-form {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.07), rgba(34, 211, 238, 0.07)), #fff;
+      }
+
+      .chat-input-row:focus-within {
+        border-color: rgba(34, 211, 238, 0.48);
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.45), 0 0 28px rgba(34, 211, 238, 0.12);
+      }
+
+      .send-btn {
+        background: linear-gradient(140deg, #c084fc, #8b5cf6 55%, #06b6d4);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+      }
+
+      .voice-btn {
+        border: 1px solid rgba(34, 211, 238, 0.18);
+        background: linear-gradient(145deg, rgba(34, 211, 238, 0.14), rgba(139, 92, 246, 0.12));
+      }
+
+      .message.user {
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.13);
+        box-shadow: 0 12px 28px rgba(99, 102, 241, 0.2), inset 0 1px rgba(255,255,255,0.18);
+      }
+
+      .message.assistant {
+        border-color: rgba(167, 139, 250, 0.16);
+        border-radius: 18px;
+        box-shadow: 0 10px 28px rgba(3, 7, 18, 0.12), inset 0 1px rgba(255,255,255,0.035);
+      }
+
+      .settings-panel {
+        width: min(100%, 1040px);
+        margin: 0 auto;
+        gap: 14px;
+        padding: clamp(22px, 4vw, 42px);
+      }
+
+      .settings-header { padding-bottom: 12px; }
+
+      .settings-header::before {
+        color: var(--secondary);
+        letter-spacing: 0.19em;
+      }
+
+      .settings-account {
+        border-color: rgba(167, 139, 250, 0.22);
+        border-radius: 20px;
+        background:
+          radial-gradient(ellipse at 100% 0%, rgba(34, 211, 238, 0.12), transparent 48%),
+          linear-gradient(120deg, rgba(139, 92, 246, 0.15), rgba(23, 33, 58, 0.94));
+        box-shadow: inset 0 1px rgba(255,255,255,0.07), 0 14px 36px rgba(3, 7, 18, 0.12);
+      }
+
+      body.light-mode .settings-account {
+        background: linear-gradient(120deg, rgba(139, 92, 246, 0.1), rgba(34, 211, 238, 0.07), #fff);
+      }
+
+      .settings-box {
+        min-height: 76px;
+        border-color: rgba(167, 139, 250, 0.17);
+        border-radius: 18px;
+        background: linear-gradient(145deg, rgba(192, 132, 252, 0.08), rgba(34, 211, 238, 0.035)), var(--panel-soft);
+        box-shadow: inset 0 1px rgba(255,255,255,0.045);
+      }
+
+      .settings-box:hover {
+        border-color: rgba(34, 211, 238, 0.48);
+        box-shadow: 0 12px 26px rgba(3, 7, 18, 0.13), 0 0 22px rgba(34, 211, 238, 0.07);
+      }
+
+      body.light-mode .settings-box {
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.055), rgba(34, 211, 238, 0.035)), #fff;
+      }
+
+      .code-panel {
+        min-height: 100%;
+        padding: clamp(16px, 3vw, 28px);
+        background: radial-gradient(ellipse at 90% 0%, rgba(34, 211, 238, 0.08), transparent 35rem);
+      }
+
+      .code-toolbar {
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: linear-gradient(120deg, rgba(139, 92, 246, 0.09), rgba(34, 211, 238, 0.045)), var(--panel-soft);
+      }
+
+      #codeEditor,
+      #codeOutput {
+        border-color: rgba(34, 211, 238, 0.2);
+        border-radius: 16px;
+        box-shadow: inset 0 1px rgba(255,255,255,0.045), 0 12px 30px rgba(3, 7, 18, 0.16);
+      }
+
+      .agent-sidebar {
+        border-color: rgba(192, 132, 252, 0.24);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1), transparent 55%),
+          linear-gradient(160deg, rgba(139, 92, 246, 0.13), var(--panel-soft));
+      }
+
+      .calculator {
+        border-color: rgba(167, 139, 250, 0.24);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.12), transparent 45%),
+          linear-gradient(145deg, rgba(139, 92, 246, 0.13), var(--panel));
+        box-shadow: 0 24px 60px rgba(3, 7, 18, 0.24), inset 0 1px rgba(255,255,255,0.08);
+      }
+
+      .calculator-screen {
+        border-color: rgba(34, 211, 238, 0.22);
+        background: linear-gradient(135deg, rgba(8, 145, 178, 0.13), rgba(139, 92, 246, 0.12)), #0b1222;
+      }
+
+      .calc-btn {
+        border-radius: 16px;
+        transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+      }
+
+      .calc-btn:hover {
+        border-color: rgba(34, 211, 238, 0.42);
+        box-shadow: 0 8px 18px rgba(34, 211, 238, 0.1);
+      }
+
+      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+      select,
+      textarea {
+        accent-color: var(--primary);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--secondary);
+        outline-offset: 3px;
+      }
+
+      @media (max-width: 700px) {
+        .app-shell { height: 100dvh; min-height: 0; }
+        .app-sidebar {
+          background:
+            radial-gradient(circle at 12% 0%, rgba(192, 132, 252, 0.15), transparent 40%),
+            linear-gradient(90deg, #15152f, #10172a);
+        }
+        .chat-messages { padding: 20px 14px; }
+        .settings-panel { padding: 20px 16px; }
+        .quick-start-btn { min-height: 78px; padding: 14px; }
+      }
+
+      @media (max-height: 620px) and (min-width: 701px) {
+        .app-shell { height: 100dvh; }
+        .chat-messages { padding-block: 18px; }
+        .quick-start-btn { min-height: 72px; }
+        .settings-panel { padding-block: 20px; }
       }
 
       .export-print-view {
@@ -2296,7 +2658,7 @@
               <path d="m31.8 8 .8 2.1 2.1.8-2.1.8-.8 2.1-.8-2.1-2.1-.8 2.1-.8.8-2.1Z" fill="#FDE68A"></path>
               <circle cx="7" cy="12" r="1" fill="#A5F3FC" opacity=".8"></circle>
             </svg>
-            <span>Taraksh GPT</span>
+            <span class="brand-wordmark">Taraksh GPT</span>
             <button id="sidebarToggleButton" class="sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-controls="appSidebar" aria-expanded="true" title="Collapse sidebar">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="4" width="18" height="16" rx="3"></rect>
@@ -2449,7 +2811,7 @@
             <div class="account-panel">
               <span id="accountStatus" class="account-status" aria-live="polite"></span>
               <button id="signInButton" class="account-signin" type="button">
-                <span>Sign in with Clerk</span>
+                <span>Sign in with Taraksh GPT</span>
               </button>
               <button id="guestModeButton" type="button">Continue as guest</button>
               <button id="signOutButton" type="button" hidden>Log out</button>
@@ -2555,13 +2917,13 @@
       {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "Taraksh's Chatbot",
-        "applicationCategory": "BusinessApplication",
+        "name": "Taraksh GPT",
+        "applicationCategory": "UtilitiesApplication",
         "applicationSubCategory": "Artificial Intelligence Chatbot",
         "operatingSystem": "Web browser",
         "inLanguage": "en",
         "keywords": "AI chatbot, browser AI assistant, web search, coding assistant, voice chat, image understanding",
-        "description": "Taraksh's Chatbot is a free browser-based AI assistant created by Taraksh Choudhary for helpful conversations, web search, image understanding, voice chat, coding, calculations, weather updates, and saved chat history.",
+        "description": "A free AI assistant for chat, web search, image understanding, coding, voice, calculations, weather, and saved conversations.",
         "author": {
           "@type": "Person",
           "name": "Taraksh Choudhary",
@@ -2581,10 +2943,15 @@
           "Theme and workspace customization"
         ],
         "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
         "sameAs": [
           "https://github.com/taraksh9123-droid/taraksh-GPT"
         ],
-        "url": "https://github.com/taraksh9123-droid/taraksh-GPT"
+        "url": "https://taraksh9123-droid.github.io/taraksh-GPT/"
       }
     </script>
 
@@ -2868,7 +3235,15 @@
         try {
           const clerkInstance = await initializeClerk();
           if (!clerkSignInMounted && clerkSignInContainer) {
-            clerkInstance.mountSignIn(clerkSignInContainer);
+            clerkInstance.mountSignIn(clerkSignInContainer, {
+              appearance: {
+                elements: {
+                  footer: { display: 'none' },
+                  rootBox: { width: '100%', maxWidth: '100%' },
+                  cardBox: { width: '100%', minWidth: '0', maxWidth: '100%' }
+                }
+              }
+            });
             clerkSignInMounted = true;
           }
         } catch (error) {
@@ -3575,7 +3950,9 @@
           downloadLink.className = 'generated-image-download';
           downloadLink.href = imageDataUrl;
           downloadLink.download = `taraksh-gpt-image-${new Date().toISOString().slice(0, 10)}.jpg`;
-          downloadLink.textContent = 'Download image';
+          downloadLink.setAttribute('aria-label', 'Download image');
+          downloadLink.title = 'Download image';
+          downloadLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path><path d="M12 15V3"></path></svg>';
           figure.appendChild(downloadLink);
         }
 
